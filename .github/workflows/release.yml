@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Flatpak tooling
         run: |
@@ -36,17 +36,18 @@ jobs:
         run: sha256sum Deskphone-*.flatpak > SHA256SUMS
 
       - name: Attest build provenance
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: |
             Deskphone-*.flatpak
             SHA256SUMS
 
       - name: Publish GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: Deskphone ${{ github.ref_name }}
           generate_release_notes: true
+          fail_on_unmatched_files: true
           body: |
             Install the bundle with:
 
