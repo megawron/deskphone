@@ -1,0 +1,932 @@
+/* Deskphone Adwaita Minimalist & SplitView High-Contrast Styling */
+
+/* Status indicators (Vertical Pill / Strich) */
+.presence-bar,
+.presence-dot {
+    min-width: 5px;
+    min-height: 20px;
+    border-radius: 9999px;
+    margin-right: 0px;
+    margin-left: 0px;
+}
+
+.presence-status-label {
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: @window_fg_color;
+}
+
+.presence-available {
+    background-color: var(--success-bg-color, #2ec27e);
+}
+
+.presence-busy {
+    background-color: var(--error-bg-color, #e01b24);
+}
+
+.presence-away {
+    background-color: var(--warning-bg-color, #f6d32d);
+}
+
+.presence-offline {
+    background-color: #77767b;
+}
+
+.presence-ringing {
+    background-color: #ff7800;
+}
+
+.presence-empty {
+    background-color: transparent;
+}
+
+/* Status-Punkt Badge mit edlem Cutout (2px Trennlinie in Zeilenfarbe für perfekten Kontrast) */
+.presence-badge-dot {
+    min-width: 10px;
+    min-height: 10px;
+    border-radius: 9999px;
+    border: 2px solid @card_bg_color;
+    background-clip: padding-box;
+    box-shadow: none;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+
+popover .presence-badge-dot {
+    border-color: @popover_bg_color;
+}
+
+headerbar .presence-badge-dot {
+    border-color: @headerbar_bg_color;
+}
+
+/* Neutraler Avatar für reine Rufnummern ohne hinterlegten Namen (ruhiges neutrales Grau mit Person-Silhouette) */
+.avatar-neutral-number,
+avatar.avatar-neutral-number {
+    background-image: none;
+    background-color: alpha(@window_fg_color, 0.10);
+    color: alpha(@window_fg_color, 0.55);
+    border-radius: 9999px;
+}
+
+/* Call Direction Icons (semantische Libadwaita-Farben für High-Contrast & Theme-Kompatibilität) */
+.icon-call-incoming {
+    color: var(--success-color, #2ec27e);
+}
+
+.icon-call-outgoing {
+    color: var(--accent-color, #3584e4);
+}
+
+.icon-call-missed {
+    color: var(--error-color, #e01b24);
+}
+
+/* Favoriten-Stern: Helles, warmes Gold statt trübem Dunkelbraun/Ocker */
+.favorite-star-gold {
+    color: #e5a50a;
+}
+
+@media (prefers-color-scheme: dark) {
+    .favorite-star-gold {
+        color: #f6d32d;
+    }
+}
+
+.sidebar-container {
+    background-color: var(--sidebar-bg-color, @window_bg_color);
+    border-right: 1px solid alpha(@window_fg_color, 0.08);
+}
+
+/* Override Libadwaita's harsh dark sidebar-pane shadow so vertical dividers stay soft & clean */
+navigation-split-view > .sidebar-pane,
+navigation-split-view > .sidebar-pane:dir(ltr),
+navigation-split-view > .sidebar-pane:dir(rtl),
+navigation-split-view > .sidebar-pane banner > revealer > widget {
+    box-shadow: none;
+}
+
+/* In collapsed / mobile single-pane mode, remove right border */
+navigation-split-view.collapsed .sidebar-container,
+navigationsplitview.collapsed .sidebar-container,
+.collapsed .sidebar-container {
+    border-right: none;
+}
+
+.sidebar-container label {
+    color: @window_fg_color;
+}
+
+/* Flache Libadwaita-HeaderBars ohne harte horizontale Trennlinie (AdwToolbarView-Ästhetik) */
+.hotkeys-header,
+.sidebar-header,
+.content-header {
+    min-height: 48px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-left: 0;
+    margin-right: 0;
+    box-shadow: none;
+    border-bottom: none;
+    background-color: transparent;
+}
+
+.sidebar-header button.flat {
+    padding: 2px 4px;
+    min-height: 28px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.content-header button.flat,
+.content-header button.toggle,
+.content-header togglebutton {
+    padding: 2px 6px;
+    min-height: 28px;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.sidebar-badge {
+    background-color: alpha(@window_fg_color, 0.12);
+    color: alpha(@window_fg_color, 0.85);
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    padding: 2px 8px;
+}
+
+/* Autocomplete Popover (Oberhalb des Eingabefelds) */
+.autocomplete-popover {
+    border-radius: 14px;
+}
+
+.autocomplete-popover > contents {
+    padding: 6px;
+    border-radius: 14px;
+}
+
+.autocomplete-list {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+}
+
+.autocomplete-list row,
+.autocomplete-list .activatable,
+.autocomplete-popover row {
+    border: none;
+    border-bottom: none;
+    box-shadow: none;
+    border-radius: 8px;
+    padding: 6px 8px;
+    margin: 2px 0;
+    transition: background-color 120ms ease;
+}
+
+.autocomplete-list row:hover,
+.autocomplete-popover row:hover {
+    background-color: alpha(@window_fg_color, 0.08);
+}
+
+/* Call Button (Full Width, Green, prominent) */
+.call-btn-full-green {
+    background-color: #2ec27e;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border-radius: 10px;
+    padding: 8px 14px;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    transition: background-color 150ms ease, transform 100ms ease;
+}
+
+.call-btn-full-green:hover {
+    background-color: #26ab6e;
+}
+
+.call-btn-full-green:active {
+    background-color: #1f8b59;
+    transform: scale(0.99);
+}
+
+.call-btn-full-green:disabled,
+button.call-btn-full-green:disabled {
+    background-color: alpha(@window_fg_color, 0.10);
+    color: alpha(@window_fg_color, 0.38);
+    box-shadow: none;
+    transform: none;
+}
+
+.dialer-call-btn:disabled,
+button.dialer-call-btn:disabled {
+    opacity: 0.4;
+    box-shadow: none;
+}
+
+/* Blockade-Cursor wenn Telefonie-Backend noch initialisiert / nicht aktiv */
+.call-blocked .call-btn-full-green,
+.call-blocked .call-btn-full-green:hover,
+.call-blocked .call-btn-full-green:active,
+.call-blocked .journal-call-btn,
+.call-blocked .journal-call-btn:hover,
+.call-blocked .contact-call-btn,
+.call-blocked .contact-call-btn:hover,
+.call-blocked .dialer-call-btn,
+.call-blocked .dialer-call-btn:hover,
+.call-blocked .chat-header-call-btn,
+.call-blocked .chat-header-call-btn:hover {
+    opacity: 0.6;
+}
+
+.call-blocked .call-btn-full-green:hover {
+    background-color: #2ec27e;
+}
+
+.call-blocked .call-btn-full-green:active {
+    background-color: #2ec27e;
+    transform: none;
+}
+
+.call-btn-full-green label {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.docked-call-card {
+    background-color: alpha(@card_bg_color, 0.95);
+    border: 1px solid alpha(@borders, 0.85);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.docked-call-card label {
+    color: @window_fg_color;
+}
+
+/* Leitungen Status Chips (Borderless, unter Voice Box) */
+.lines-section {
+    margin-top: 2px;
+    margin-bottom: 6px;
+}
+
+.line-chip {
+    background-color: alpha(@window_fg_color, 0.05);
+    border: none;
+    border-radius: 8px;
+    padding: 5px 10px;
+    transition: background-color 150ms ease;
+}
+
+.line-chip:hover {
+    background-color: alpha(@window_fg_color, 0.09);
+}
+
+.line-chip-active {
+    background-color: alpha(@window_fg_color, 0.07);
+}
+
+.speaker-green-icon {
+    color: #2ec27e;
+}
+
+.line-volume-bar,
+.line-volume-scale {
+    min-height: 12px;
+    margin-top: 1px;
+    margin-bottom: 2px;
+}
+
+.line-volume-bar trough,
+.line-volume-scale trough {
+    background-color: alpha(@window_fg_color, 0.15);
+    border-radius: 9999px;
+    min-height: 4px;
+}
+
+.line-volume-bar progress,
+.line-volume-scale highlight {
+    background-color: #3584e4;
+    border-radius: 9999px;
+    min-height: 4px;
+}
+
+.line-volume-scale slider {
+    min-width: 10px;
+    min-height: 10px;
+    border-radius: 9999px;
+    background-color: #ffffff;
+    border: 1px solid alpha(#000000, 0.25);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    margin: -3px 0;
+    transition: transform 120ms ease;
+}
+
+.line-volume-scale slider:hover {
+    transform: scale(1.25);
+}
+
+.docked-held-banner {
+    background-color: rgba(246, 211, 45, 0.25);
+    border: 1px solid rgba(246, 211, 45, 0.55);
+    border-radius: 8px;
+    padding: 6px 10px;
+    margin-bottom: 6px;
+}
+
+.docked-held-banner label {
+    color: @window_fg_color;
+    font-weight: 600;
+}
+
+/* Flush In-Call Held Call Banner (Edge-to-Edge Umschaltleiste) */
+.flush-held-banner {
+    background: linear-gradient(90deg, rgba(230, 97, 0, 0.2), rgba(246, 211, 45, 0.2));
+    border-bottom: 1px solid rgba(246, 211, 45, 0.45);
+    padding: 10px 24px;
+    transition: background 150ms ease;
+}
+
+.flush-held-banner:hover {
+    background: linear-gradient(90deg, rgba(230, 97, 0, 0.28), rgba(246, 211, 45, 0.28));
+}
+
+.flush-held-banner label {
+    color: @window_fg_color;
+    font-weight: 600;
+}
+
+.swap-btn-minimal {
+    border-radius: 9999px;
+    padding: 4px 12px;
+    font-weight: 600;
+    font-size: 0.82rem;
+    background-color: alpha(@window_fg_color, 0.10);
+    border: none;
+    color: @window_fg_color;
+    transition: background-color 120ms ease;
+}
+
+.swap-btn-minimal:hover {
+    background-color: alpha(@window_fg_color, 0.16);
+}
+
+.connect-transfer-btn {
+    border-radius: 9999px;
+    padding: 4px 12px;
+    font-weight: 700;
+    font-size: 0.82rem;
+    background-color: #2ec27e;
+    border: none;
+    color: #ffffff;
+    transition: background-color 120ms ease;
+}
+
+.connect-transfer-btn:hover {
+    background-color: #26ab6e;
+}
+
+.sidebar-section-toggle {
+    min-width: 24px;
+    min-height: 24px;
+    padding: 2px;
+    opacity: 0.65;
+}
+
+.sidebar-section-toggle:hover {
+    opacity: 1.0;
+}
+
+/* Flush Active Call Surface */
+.flush-call-surface {
+    background-color: alpha(@card_bg_color, 0.7);
+    border-bottom: 1px solid alpha(@borders, 0.7);
+    padding: 24px 32px;
+}
+
+.flush-call-surface label {
+    color: @window_fg_color;
+}
+
+.timer-text-flush {
+    font-size: 2.2rem;
+    font-weight: 700;
+    font-family: 'Cantarell', 'Inter', monospace;
+    letter-spacing: 0.5px;
+    color: @window_fg_color;
+}
+
+.audio-waveform-bar {
+    min-width: 3px;
+    border-radius: 2px;
+    background-color: #2ec27e;
+    margin: 0 1.5px;
+}
+
+.call-btn-circular {
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 9999px;
+    padding: 0;
+}
+
+.call-btn-destructive {
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 9999px;
+    background-color: #e01b24;
+    color: #ffffff;
+    padding: 0;
+}
+
+.call-btn-destructive:hover {
+    background-color: #c01c28;
+}
+
+button.call-btn-active-mute,
+.call-btn-active-mute {
+    background-color: #e01b24;
+    color: #ffffff;
+}
+
+button.call-btn-active-mute:hover,
+.call-btn-active-mute:hover {
+    background-color: #c01c28;
+}
+
+.status-footer {
+    padding: 10px 14px;
+    border-top: 1px solid alpha(@borders, 0.6);
+}
+
+.line-status-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: @window_fg_color;
+    letter-spacing: 0.2px;
+}
+
+.dim-label {
+    opacity: 0.75;
+}
+
+.search-dial-entry {
+    font-size: 0.95rem;
+    border-radius: 10px;
+    min-height: 36px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.search-dial-entry text {
+    min-height: 26px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+searchentry {
+    min-height: 36px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+searchentry text {
+    min-height: 24px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+.fwd-active-icon {
+    color: #3584e4;
+}
+
+/* Content Direct List (weiche, dezente Libadwaita-Zeilen ohne harte Linien) */
+.direct-list {
+    background-color: transparent;
+}
+
+.direct-list > row {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-bottom: 1px solid alpha(@window_fg_color, 0.05);
+    transition: background-color 120ms ease;
+}
+
+.direct-list > row:last-child {
+    border-bottom: none;
+}
+
+.direct-list > row:hover {
+    background-color: alpha(@window_fg_color, 0.04);
+}
+
+/* Swyx Chat / Sofortnachrichten Styling */
+.chat-main-container {
+    background-color: var(--window-bg-color, @window_bg_color);
+}
+
+.chat-header-bar {
+    background-color: alpha(@card_bg_color, 0.6);
+    border-bottom: 1px solid alpha(@borders, 0.5);
+    padding: 4px 8px;
+}
+
+.chat-header-call-btn {
+    color: #2ec27e;
+    border-radius: 9999px;
+    padding: 6px;
+    margin-left: 4px;
+    transition: background-color 150ms ease, color 150ms ease;
+}
+
+.chat-header-call-btn:hover {
+    background-color: alpha(#2ec27e, 0.15);
+    color: #26ab6e;
+}
+
+.chat-hint-card {
+    background-color: alpha(@card_bg_color, 0.45);
+    border: 1px solid alpha(@borders, 0.4);
+    border-radius: 12px;
+    padding: 20px 24px;
+}
+
+.chat-bubble-incoming {
+    background-color: alpha(@card_bg_color, 0.95);
+    border: 1px solid alpha(@borders, 0.65);
+    color: @window_fg_color;
+    border-radius: 14px 14px 14px 4px;
+    padding: 10px 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.chat-bubble-incoming label {
+    color: @window_fg_color;
+}
+
+.chat-bubble-outgoing {
+    background-color: #3584e4;
+    color: #ffffff;
+    border-radius: 14px 14px 4px 14px;
+    padding: 10px 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.chat-bubble-outgoing label {
+    color: #ffffff;
+}
+
+.chat-timestamp {
+    font-size: 0.72rem;
+    opacity: 0.75;
+    margin-top: 2px;
+}
+
+.chat-input-bar {
+    border-top: 1px solid alpha(@borders, 0.5);
+    background-color: alpha(@card_bg_color, 0.6);
+    padding: 10px 12px;
+}
+
+.chat-text-entry {
+    border-radius: 18px;
+    font-size: 0.95rem;
+    min-height: 40px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+
+.chat-text-entry text {
+    min-height: 26px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.chat-send-btn {
+    min-width: 34px;
+    min-height: 34px;
+    border-radius: 9999px;
+    background-color: #3584e4;
+    color: #ffffff;
+    padding: 0;
+    transition: background-color 150ms ease;
+}
+
+.chat-send-btn:hover {
+    background-color: #1c71d8;
+}
+
+/* Incoming Call & Pickup Signalisierungs-Banner (minimalistisch, Libadwaita) */
+.incoming-call-banner {
+    background-color: alpha(#2ec27e, 0.11);
+    border: 1px solid alpha(#2ec27e, 0.28);
+    border-radius: 12px;
+    padding: 8px 12px;
+    margin: 8px 10px 4px 10px;
+}
+
+.pickup-call-banner {
+    background-color: alpha(#ff7800, 0.11);
+    border: 1px solid alpha(#ff7800, 0.28);
+    border-radius: 12px;
+    padding: 8px 12px;
+    margin: 8px 10px 4px 10px;
+}
+
+.call-banner-answer {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 0;
+    background-color: #2ec27e;
+    color: #ffffff;
+}
+
+.call-banner-answer:hover {
+    background-color: #26ab6e;
+}
+
+.call-banner-reject {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 0;
+    background-color: #e01b24;
+    color: #ffffff;
+}
+
+.call-banner-reject:hover {
+    background-color: #c01c28;
+}
+
+.call-banner-close {
+    min-width: 26px;
+    min-height: 26px;
+    padding: 0;
+    opacity: 0.6;
+}
+
+.call-banner-close:hover {
+    opacity: 1.0;
+}
+
+/* Filter Scroller & Compact Pills (Vollständig responsiv auf schmalen Displays) */
+.filter-scroller {
+    background: transparent;
+}
+
+.filter-scroller scrollbar {
+    opacity: 0;
+    min-width: 0;
+    min-height: 0;
+}
+
+.filter-pills button {
+    padding: 4px 6px;
+    font-size: 0.82rem;
+    min-height: 28px;
+    min-width: 0;
+}
+
+.search-dial-entry {
+    border-radius: 8px;
+    min-width: 0;
+}
+
+/* Kompakte Zeilenränder für mobile / schmale Bildschirme */
+.direct-list row {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+/* Verbindungs-Banner (AdwBanner): Absolut sauber ohne Ränder oder Reststreifen */
+banner {
+    background: transparent;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+    padding: 0;
+    min-height: 0;
+}
+
+banner > revealer > widget {
+    border-top: none;
+    margin-top: -1px;
+}
+
+/* Nur die innere aufgeklappte Box wird dezent gefärbt, niemals der äußere Banner-Container */
+banner.conn-banner-connecting > revealer > widget {
+    background-color: alpha(@accent_bg_color, 0.15);
+    border-bottom: 1px solid alpha(@accent_bg_color, 0.25);
+}
+
+banner.conn-banner-success > revealer > widget {
+    background-color: alpha(#2ec27e, 0.18);
+    border-bottom: 1px solid alpha(#2ec27e, 0.25);
+}
+
+banner.conn-banner-warning > revealer > widget {
+    background-color: alpha(#e5a50a, 0.18);
+    border-bottom: 1px solid alpha(#e5a50a, 0.25);
+}
+
+/* Ausfahrbares Wähltastenfeld im nativen Libadwaita-Design (rahmenlos, weiche Flächen) */
+.sidebar-dialpad-key {
+    background-color: alpha(@window_fg_color, 0.06);
+    border: none;
+    box-shadow: none;
+    border-radius: 9px;
+    padding: 2px 6px;
+    min-height: 30px;
+    transition: background-color 120ms ease, transform 80ms ease;
+}
+
+.sidebar-dialpad-key:hover {
+    background-color: alpha(@window_fg_color, 0.11);
+    border: none;
+    box-shadow: none;
+}
+
+.sidebar-dialpad-key:active {
+    background-color: alpha(@window_fg_color, 0.17);
+    border: none;
+    box-shadow: none;
+    transform: scale(0.98);
+}
+
+.sidebar-dialpad-digit {
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: @window_fg_color;
+}
+
+.sidebar-dialpad-sub {
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.35px;
+    opacity: 0.52;
+    color: @window_fg_color;
+}
+
+.sidebar-dialpad-toggle {
+    min-height: 28px;
+    min-width: 28px;
+    padding: 2px;
+    border: none;
+    box-shadow: none;
+}
+
+.sidebar-dialpad-toggle:checked {
+    background-color: alpha(@window_fg_color, 0.11);
+}
+
+/* Ein-/Ausklappbare Kurzwahl-Leiste am linken Fensterrand (durchgehender Trennstrich von Kopf bis Fuß) */
+.hotkeys-sidebar {
+    background-color: var(--sidebar-bg-color, @window_bg_color);
+    border: none;
+    border-right: 1px solid alpha(@window_fg_color, 0.12);
+}
+
+.hotkeys-header {
+    border-right: none;
+}
+
+.hotkeys-scroller {
+    background: transparent;
+    border-right: none;
+}
+
+.hotkeys-scroller scrollbar {
+    opacity: 0.4;
+}
+
+.hotkey-chip {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    border-radius: 8px;
+    padding: 5px 8px;
+    min-height: 28px;
+    transition: background-color 120ms ease, transform 80ms ease;
+}
+
+.hotkey-chip:hover {
+    background-color: alpha(@window_fg_color, 0.07);
+    border: none;
+}
+
+.hotkey-chip.hotkey-chip-busy {
+    background-color: alpha(#e01b24, 0.09);
+    border: none;
+}
+
+.hotkey-chip.hotkey-chip-busy:hover {
+    background-color: alpha(#e01b24, 0.15);
+    border: none;
+}
+
+.hotkey-chip.hotkey-chip-ringing {
+    background-color: alpha(#ff7800, 0.14);
+    border: none;
+}
+
+.hotkey-chip.hotkey-chip-ringing:hover {
+    background-color: alpha(#ff7800, 0.22);
+    border: none;
+}
+
+.hotkey-chip:active {
+    background-color: alpha(@window_fg_color, 0.13);
+    border: none;
+    transform: scale(0.99);
+}
+
+/* Status-Oval (wie im eigenen Status-Auswahl-Dropdown oben links) */
+.hotkey-led {
+    min-width: 7px;
+    min-height: 15px;
+    border-radius: 9999px;
+    border: none;
+    box-shadow: none;
+    margin-right: 2px;
+}
+
+.hotkey-led.presence-available {
+    background-color: #2ec27e;
+}
+
+.hotkey-led.presence-busy {
+    background-color: #e01b24;
+}
+
+.hotkey-led.presence-ringing {
+    background-color: #ff7800;
+}
+
+.hotkey-led.presence-away {
+    background-color: #f6d32d;
+}
+
+.hotkey-led.presence-offline {
+    background-color: #77767b;
+    opacity: 0.65;
+}
+
+.hotkey-name {
+    font-size: 0.94rem;
+    font-weight: 600;
+    color: @window_fg_color;
+}
+
+/* Dezentes Zieh-Symbol (⋮⋮) an den Leitungen für Drag & Drop Weiterleitung */
+.line-drag-grip {
+    font-size: 0.72rem;
+    letter-spacing: -1px;
+    opacity: 0.25;
+    margin-left: 2px;
+    transition: opacity 120ms ease;
+}
+
+.line-chip:hover .line-drag-grip,
+.line-chip-active .line-drag-grip {
+    opacity: 0.75;
+}
+
+.dragging-call {
+    opacity: 0.85;
+    outline: 1.5px dashed #2ec27e;
+    outline-offset: -1.5px;
+}
+
+/* Drag & Drop Ziel-Hervorhebung beim Ziehen einer Leitung / eines Telefonats auf Kontakt, Journal oder Hotkey */
+.drop-target-transfer,
+row.drop-target-transfer,
+button.drop-target-transfer {
+    background-color: alpha(#2ec27e, 0.22);
+    outline: 1.5px solid #2ec27e;
+    outline-offset: -1.5px;
+    border-radius: 8px;
+}
+
+/* Rechtsklick-Kontextmenü: Telefonat abgeben Button */
+.transfer-context-btn {
+    border-radius: 9999px;
+    padding: 4px 10px;
+    min-height: 26px;
+    background-color: alpha(@accent_bg_color, 0.14);
+    color: @window_fg_color;
+    transition: background-color 120ms ease;
+}
+
+.transfer-context-btn:hover {
+    background-color: alpha(#2ec27e, 0.25);
+}
+
+
+
