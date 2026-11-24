@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  flatpak-release:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
+      options: --privileged
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Flatpak bundle
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: Deskphone-${{ github.ref_name }}-x86_64.flatpak
+          manifest-path: com.martingawron.Deskphone.json
+          cache-key: flatpak-release-${{ github.sha }}
+          arch: x86_64
+
+      - name: Create checksums
+        run: sha256sum Deskphone-*.flatpak > SHA256SUMS
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            Deskphone-*.flatpak
+            SHA256SUMS
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Deskphone ${{ github.ref_name }}
+          generate_release_notes: true
+          body: |
+            Install the bundle with:
+
+                flatpak install --user Deskphone-${{ github.ref_name }}-x86_64.flatpak
+
+            Verify the download (GitHub CLI):
+
+                gh attestation verify Deskphone-${{ github.ref_name }}-x86_64.flatpak --repo ${{ github.repository }}
+          files: |
+            Deskphone-*.flatpak
+            SHA256SUMS
