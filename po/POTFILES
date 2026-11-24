@@ -1,0 +1,12 @@
+data/com.martingawron.Deskphone.desktop
+data/com.martingawron.Deskphone.metainfo.xml
+src/models.rs
+src/tray.rs
+src/ui/chat_window.rs
+src/ui/contacts_view.rs
+src/ui/dialer_view.rs
+src/ui/incall_view.rs
+src/ui/journal_view.rs
+src/ui/settings_dialog.rs
+src/ui/sidebar.rs
+src/ui/window.rs

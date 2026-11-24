@@ -1,0 +1,778 @@
+# German translation for Deskphone.
+# Copyright (C) 2026 Martin Gawron
+# This file is distributed under the same license as the Deskphone package (GPL-3.0-or-later).
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: deskphone 0.1.0\n"
+"Report-Msgid-Bugs-To: https://github.com/megawron/deskphone/issues\n"
+"POT-Creation-Date: 2026-11-24 09:40+0100\n"
+"PO-Revision-Date: 2026-11-24 09:45+0100\n"
+"Last-Translator: Martin Gawron <martin@martingawron.com>\n"
+"Language-Team: German\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Available"
+msgstr "Erreichbar"
+
+msgid "In a Call"
+msgstr "Im Gespräch"
+
+msgid "Away"
+msgstr "Abwesend"
+
+msgid "Offline"
+msgstr "Abgemeldet"
+
+msgid "Ringing"
+msgstr "Klingelt"
+
+msgid "Do Not Disturb"
+msgstr "Bitte nicht stören"
+
+msgid "Incoming call: {info}"
+msgstr "Eingehender Anruf: {info}"
+
+msgid "Incoming call…"
+msgstr "Eingehender Anruf…"
+
+msgid "In call: {info}"
+msgstr "Im Gespräch: {info}"
+
+msgid "Status: {status}"
+msgstr "Status: {status}"
+
+msgid "Unknown"
+msgstr "Unbekannt"
+
+msgid "Answer call ({caller})"
+msgstr "Anruf annehmen ({caller})"
+
+msgid "Decline call"
+msgstr "Anruf ablehnen"
+
+msgid "Active call: {call}"
+msgstr "Aktiver Anruf: {call}"
+
+msgid "End call"
+msgstr "Gespräch beenden"
+
+msgid "Show Deskphone"
+msgstr "Deskphone anzeigen"
+
+msgid "Quit"
+msgstr "Beenden"
+
+msgid "Call Journal"
+msgstr "Rufjournal"
+
+msgid "Call journal & missed calls"
+msgstr "Rufjournal & verpasste Anrufe"
+
+msgid "Contacts"
+msgstr "Telefonbuch"
+
+msgid "Contacts & colleagues directory"
+msgstr "Telefonbuch & interne Kollegenliste"
+
+msgid "Voicemail"
+msgstr "Voice Box"
+
+msgid "Voicemail messages"
+msgstr "Voice Box Sprachnachrichten"
+
+msgid "Speed Dial"
+msgstr "Kurzwahl"
+
+msgid "Show or hide speed dial"
+msgstr "Kurzwahl ein-/ausklappen"
+
+msgid "Active Call"
+msgstr "Aktives Gespräch"
+
+msgid "Keypad"
+msgstr "Tastenfeld"
+
+msgid "Search"
+msgstr "Suchen"
+
+msgid "Search (Ctrl+F)"
+msgstr "Suchen (Strg+F)"
+
+msgid "Connecting to phone server…"
+msgstr "Verbindung zum Server wird hergestellt…"
+
+msgid "Connecting to phone system…"
+msgstr "Verbinde mit Telefonanlage…"
+
+msgid "Read-only"
+msgstr "Nur lesend"
+
+msgid "Preferences"
+msgstr "Einstellungen"
+
+msgid "Keyboard Shortcuts"
+msgstr "Tastenkürzel"
+
+msgid "About Deskphone"
+msgstr "Über Deskphone"
+
+msgid "Main Menu"
+msgstr "Hauptmenü"
+
+msgid "General"
+msgstr "Allgemein"
+
+msgid "Open Preferences"
+msgstr "Einstellungen öffnen"
+
+msgid "Show Keyboard Shortcuts"
+msgstr "Tastenkürzel anzeigen"
+
+msgid "Telephony"
+msgstr "Telefonie"
+
+msgid "Dial number directly (in dial field)"
+msgstr "Nummer direkt wählen (im Eingabefeld)"
+
+msgid "Close search"
+msgstr "Suche schließen"
+
+msgid "Modern native SIP and PBX softphone for GNOME"
+msgstr "Modernes, natives SIP- und Telefonanlagen-Softphone für GNOME"
+
+msgid "No New Voicemails"
+msgstr "Keine neuen Sprachnachrichten"
+
+msgid "Your voicemail inbox is currently empty."
+msgstr "Ihre Sprachbox ist aktuell leer."
+
+msgid "Call voicemail to listen to messages"
+msgstr "Sprachbox der Telefonanlage anrufen und Nachrichten abhören"
+
+msgid "Call Voicemail"
+msgstr "Voice Box anrufen / abhören"
+
+msgid "Profile"
+msgstr "Profil"
+
+msgid "Profile Picture"
+msgstr "Profilbild"
+
+msgid "Stored on Swyx server"
+msgstr "Auf dem Swyx-Server gespeichert"
+
+msgid "No profile picture set"
+msgstr "Kein Profilbild festgelegt"
+
+msgid "Change…"
+msgstr "Ändern…"
+
+msgid "Choose a new profile picture (JPEG, PNG, or WebP)"
+msgstr "Neues Profilbild auswählen (JPEG, PNG oder WebP)"
+
+msgid "Remove profile picture"
+msgstr "Profilbild entfernen"
+
+msgid "Images (PNG, JPEG, WebP, BMP)"
+msgstr "Bilder (PNG, JPEG, WebP, BMP)"
+
+msgid "Choose Profile Picture"
+msgstr "Profilbild auswählen"
+
+msgid "Could not process image: {error}"
+msgstr "Bild konnte nicht verarbeitet werden: {error}"
+
+msgid "Uploading to Swyx server…"
+msgstr "Wird auf den Swyx-Server hochgeladen…"
+
+msgid "Profile picture updated"
+msgstr "Profilbild erfolgreich aktualisiert"
+
+msgid "Upload failed: {error}"
+msgstr "Upload fehlgeschlagen: {error}"
+
+msgid "Removing profile picture…"
+msgstr "Profilbild wird entfernt…"
+
+msgid "Profile picture removed"
+msgstr "Profilbild entfernt"
+
+msgid "Remove failed: {error}"
+msgstr "Entfernen fehlgeschlagen: {error}"
+
+msgid "Account & Server"
+msgstr "Konto & Server"
+
+msgid "Standard SIP (FRITZ!Box, Sipgate, …)"
+msgstr "Standard SIP (FRITZ!Box, Sipgate, …)"
+
+msgid "Provider"
+msgstr "Anbieter"
+
+msgid "Server / Hostname"
+msgstr "Server / Hostname"
+
+msgid "SIP Port"
+msgstr "SIP-Port"
+
+msgid "SIP Domain / Realm (optional)"
+msgstr "SIP-Domäne / Realm (optional)"
+
+msgid "Username"
+msgstr "Benutzername"
+
+msgid "Password"
+msgstr "Passwort"
+
+msgid "Audio"
+msgstr "Audio"
+
+msgid "Headphones / Speakers"
+msgstr "Kopfhörer / Lautsprecher"
+
+msgid "For calls"
+msgstr "Für Gespräche"
+
+msgid "Microphone"
+msgstr "Mikrofon"
+
+msgid "Ringtone"
+msgstr "Klingelton"
+
+msgid "For incoming calls"
+msgstr "Für eingehende Anrufe"
+
+msgid "Test ringtone"
+msgstr "Klingelton testen"
+
+msgid "Search contacts"
+msgstr "Kontakte durchsuchen"
+
+msgid "No Contacts"
+msgstr "Keine Kontakte"
+
+msgid "Contacts appear here once connected to your phone system."
+msgstr "Kontakte erscheinen hier nach der Verbindung mit Ihrer Telefonanlage."
+
+msgid "Search call journal"
+msgstr "Rufjournal durchsuchen"
+
+msgid "All"
+msgstr "Alle"
+
+msgid "Missed"
+msgstr "Verpasst"
+
+msgid "Incoming"
+msgstr "Eingehend"
+
+msgid "Outgoing"
+msgstr "Ausgehend"
+
+msgid "No Calls"
+msgstr "Keine Anrufe"
+
+msgid "Incoming, outgoing, and missed calls will appear here."
+msgstr "Hier erscheinen eingehende, ausgehende und verpasste Anrufe."
+
+msgid "Swap"
+msgstr "Wechseln"
+
+msgid "Swap between active and held call"
+msgstr "Makeln: Zwischen beiden Gesprächen wechseln"
+
+msgid "Merge"
+msgstr "Verbinden"
+
+msgid "Connect both calls (attended transfer)"
+msgstr "Beide Gespräche zusammenschalten (Übergabe nach Rückfrage)"
+
+msgid "Mute"
+msgstr "Stummschalten"
+
+msgid "Hold"
+msgstr "Halten"
+
+msgid "Transfer (Opens contacts or drag line onto contact)"
+msgstr "Weiterleiten (Öffnet Telefonbuch oder Leitung auf Kontakt ziehen)"
+
+msgid "Show or hide keypad (DTMF for voice menus)"
+msgstr "Ziffernblock ein-/ausblenden (DTMF für Sprachmenüs)"
+
+msgid "Keypad (DTMF for voice menus)"
+msgstr "Ziffernblock (DTMF für Sprachmenüs)"
+
+msgid "Hang Up"
+msgstr "Auflegen"
+
+msgid "DTMF Keypad (Voice Menu / IVR)"
+msgstr "DTMF Tastenfeld (Sprachmenü / IVR)"
+
+msgid "Ready for digits"
+msgstr "Bereit für Zifferneingabe"
+
+msgid "Clear digits"
+msgstr "Ziffernanzeige leeren"
+
+msgid "Dial"
+msgstr "Rufnummer"
+
+msgid "Show or hide dialpad"
+msgstr "Wähltasten ein-/ausblenden"
+
+msgid "Number or name"
+msgstr "Rufnummer oder Name"
+
+msgid "Enter number"
+msgstr "Nummer eingeben"
+
+msgid "Delete digit (Backspace)"
+msgstr "Ziffer löschen (Backspace)"
+
+msgid "Call {name}"
+msgstr "{name} anrufen"
+
+msgid "Instant Messaging"
+msgstr "Sofortnachrichten"
+
+msgid ""
+"Send instant messages via SIP MESSAGE (RFC 3428).\n"
+"Messages are ephemeral and cleared when closing."
+msgstr ""
+"Sofortnachricht via SIP MESSAGE (RFC 3428) senden.\n"
+"Nachrichten sind flüchtig und werden beim Schließen verworfen."
+
+msgid "Message"
+msgstr "Nachricht"
+
+msgid "Press Enter to send"
+msgstr "Eingabe mit Enter senden"
+
+msgid "Send"
+msgstr "Senden"
+
+msgid "GNOME Contacts"
+msgstr "GNOME Kontakte"
+
+msgid "Sync GNOME Contacts"
+msgstr "GNOME Kontakte einbinden"
+
+msgid "Include local address books and GNOME Online Accounts"
+msgstr "Lokale Adressbücher und GNOME-Online-Konten synchronisieren"
+
+msgid "Mon"
+msgstr "Mo."
+
+msgid "Tue"
+msgstr "Di."
+
+msgid "Wed"
+msgstr "Mi."
+
+msgid "Thu"
+msgstr "Do."
+
+msgid "Fri"
+msgstr "Fr."
+
+msgid "Sat"
+msgstr "Sa."
+
+msgid "Sun"
+msgstr "So."
+
+msgid "Monday"
+msgstr "Montag"
+
+msgid "Tuesday"
+msgstr "Dienstag"
+
+msgid "Wednesday"
+msgstr "Mittwoch"
+
+msgid "Thursday"
+msgstr "Donnerstag"
+
+msgid "Friday"
+msgstr "Freitag"
+
+msgid "Saturday"
+msgstr "Samstag"
+
+msgid "Sunday"
+msgstr "Sonntag"
+
+msgid "Softphone (PC Audio)"
+msgstr "Softphone (PC-Audio)"
+
+msgid "CTI (Desk Phone)"
+msgstr "CTI (Tischtelefon)"
+
+msgid "Telephony: PC Audio active • Click for CTI (Desk Phone)"
+msgstr "Telefonie: PC-Audio aktiv • Klicken für CTI (Tischtelefon)"
+
+msgid "Telephony: CTI (Desk Phone) active • Click for PC Audio"
+msgstr "Telefonie: CTI (Tischtelefon) aktiv • Klicken für PC-Audio"
+
+msgid "Mobile"
+msgstr "Mobilfunk"
+
+msgid "Internal Extension"
+msgstr "Interner Anschluss"
+
+msgid "Landline / External"
+msgstr "Festnetz / Extern"
+
+msgid "External Call"
+msgstr "Externer Anruf"
+
+msgid "{kind} • Target: {target}"
+msgstr "{kind} • Ziel: {target}"
+
+msgid "Extension {ext}"
+msgstr "Durchwahl {ext}"
+
+msgid "Favorite (Speed Dial)"
+msgstr "Favorit (Kurzwahl)"
+
+msgid "Extension"
+msgstr "Durchwahl"
+
+msgid "Direct"
+msgstr "Direkt"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Drag line here or right-click to transfer call"
+msgstr "Leitung hierher ziehen oder Rechtsklick: Telefonat abgeben"
+
+msgid "Open chat with {name}"
+msgstr "Chat mit {name} öffnen"
+
+msgid "Chat with {name}"
+msgstr "Chat mit {name}"
+
+msgid "Call {name} ({number})"
+msgstr "Anrufen: {name} ({number})"
+
+msgid "Transfer Call"
+msgstr "Telefonat abgeben"
+
+msgid "Transfer active or ringing call directly to {name} ({number})"
+msgstr "Aktuelles oder klingelndes Telefonat direkt an {name} ({number}) übergeben"
+
+msgid "Remove from favorites"
+msgstr "Aus Favoriten entfernen"
+
+msgid "Add to favorites"
+msgstr "Zu Favoriten hinzufügen"
+
+msgid "{name} removed from favorites"
+msgstr "{name} aus Favoriten entfernt"
+
+msgid "{name} added to favorites"
+msgstr "{name} zu Favoriten hinzugefügt"
+
+msgid "Send instant message to {name}"
+msgstr "Sofortnachricht an {name}"
+
+msgid "Copy number"
+msgstr "Nummer kopieren"
+
+msgid "{base} • Picked up by: {who}"
+msgstr "{base} • Herangeholt: {who}"
+
+msgid "{base} • Answered by: {who}"
+msgstr "{base} • Vertretung: {who}"
+
+msgid "Target: {target} • Picked up by {who}"
+msgstr "Ziel: {target} • Herangeholt von {who}"
+
+msgid "Target: {target} • Answered by {who}"
+msgstr "Ziel: {target} • Vertretung: {who}"
+
+msgid "Target: {target} • Not answered"
+msgstr "Ziel: {target} • Nicht abgenommen"
+
+msgid "Target: {target}"
+msgstr "Ziel: {target}"
+
+msgid "Duration"
+msgstr "Dauer"
+
+msgid "Call back: {name}"
+msgstr "Rückruf: {name}"
+
+msgid "Call back {name}"
+msgstr "Zurückrufen: {name}"
+
+msgid "No Results"
+msgstr "Keine Treffer"
+
+msgid "No matching entries found in the call journal."
+msgstr "Für diese Suche wurden keine Einträge im Rufjournal gefunden."
+
+msgid "Digits: {digits}"
+msgstr "Ziffern: {digits}"
+
+msgid "Change presence status (click to select)"
+msgstr "Präsenzstatus ändern (Klicken für Auswahl)"
+
+msgid "Call forwarding active"
+msgstr "Rufumleitung aktiv"
+
+msgid "CALL FORWARDING"
+msgstr "RUFUMLEITUNG"
+
+msgid "Off (No Forwarding)"
+msgstr "Aus (Keine Umleitung)"
+
+msgid "Forward to:"
+msgstr "Weiterleiten an:"
+
+msgid "Phone number (Enter)"
+msgstr "Rufnummer (Enter)"
+
+msgid "Status • Call forwarding active to: {number}"
+msgstr "Status • Rufumleitung aktiv an: {number}"
+
+msgid "Presence status & call forwarding (click to change)"
+msgstr "Präsenzstatus & Rufumleitung (Klicken zum Ändern)"
+
+msgid "Line 1 • CTI mode ready • Desk phone connected"
+msgstr "Leitung 1 • CTI-Modus bereit • Tischtelefon verbunden"
+
+msgid "Line 1 • Softphone ready • PC Audio"
+msgstr "Leitung 1 • Softphone bereit • PC-Audio"
+
+msgid "Line 1 • CTI mode active • Controlling desk phone"
+msgstr "Leitung 1 • CTI-Modus aktiv • Tischtelefon wird gesteuert"
+
+msgid "Remove from speed dial / favorites"
+msgstr "Aus Kurzwahl / Favoriten entfernen"
+
+msgid "Line 1 • HD"
+msgstr "Leitung 1 • HD"
+
+msgid "Enter a phone number or select a contact"
+msgstr "Rufnummer eingeben oder Kontakt auswählen"
+
+msgid "Dialing unavailable while connecting"
+msgstr "Wählen nicht verfügbar (Verbindung wird hergestellt)"
+
+msgid "Call {number} (Enter)"
+msgstr "Anrufen: {number} (Enter)"
+
+msgid "Line 1"
+msgstr "Leitung 1"
+
+msgid "Line 2"
+msgstr "Leitung 2"
+
+msgid "Dismiss notification"
+msgstr "Signal ausblenden"
+
+msgid "Presence status: {status}"
+msgstr "Präsenzstatus: {status}"
+
+msgid "Unmute"
+msgstr "Stummschaltung aufheben"
+
+msgid "Microphone muted"
+msgstr "Mikrofon stummgeschaltet"
+
+msgid "Microphone active"
+msgstr "Mikrofon wieder aktiv"
+
+msgid "Resume call"
+msgstr "Gespräch fortsetzen"
+
+msgid "Call on hold"
+msgstr "Gespräch gehalten (Warteschleife)"
+
+msgid "Call resumed"
+msgstr "Gespräch fortgesetzt"
+
+msgid "Drag line onto a contact or right-click → Transfer Call"
+msgstr "Leitung auf Kontakt/Kurzwahl ziehen oder Rechtsklick → Telefonat abgeben"
+
+msgid "Call from {name} declined"
+msgstr "Anruf von {name} abgewiesen"
+
+msgid "Connecting to phone server… Please wait a moment."
+msgstr "Telefonie-Server verbindet noch… Bitte einen kurzen Moment warten."
+
+msgid "{count} new voicemail(s)"
+msgstr "{count} neue Sprachnachricht(en)"
+
+msgid "{count} saved voicemail(s)"
+msgstr "{count} gespeicherte Sprachnachricht(en)"
+
+msgid "Messages stored in your voicemail inbox:"
+msgstr "Auf Ihrer Sprachbox hinterlegte Nachrichten:"
+
+msgid "{new} new and {old} saved voicemail(s) in your inbox."
+msgstr "{new} neue und {old} gespeicherte Nachricht(en) auf Ihrer Sprachbox."
+
+msgid "{count} saved voicemail(s) in your inbox."
+msgstr "{count} gespeicherte Nachricht(en) auf Ihrer Sprachbox."
+
+msgid "Call connected: {target}"
+msgstr "Anruf verbunden: {target}"
+
+msgid "Message from {name}"
+msgstr "Nachricht von {name}"
+
+msgid "Call back caller"
+msgstr "Anrufer zurückrufen"
+
+msgid "Set up your SIP or PBX account to start making calls"
+msgstr "Richten Sie Ihr SIP- oder Telefonanlagen-Konto ein, um zu telefonieren"
+
+msgid "Close Window"
+msgstr "Fenster schließen"
+
+msgid "Stay reachable for incoming phone calls in the background"
+msgstr "Für eingehende Anrufe im Hintergrund erreichbar bleiben"
+
+msgid "Automatic"
+msgstr "Automatisch"
+
+msgid "Phone System"
+msgstr "Telefonanlage"
+
+msgid "Advanced"
+msgstr "Erweitert"
+
+msgid "Phone system, SIP port, and domain"
+msgstr "Telefonanlage, SIP-Port und Domain"
+
+msgid "System Default"
+msgstr "Systemstandard"
+
+msgid "Please enter server and username in Preferences."
+msgstr "Bitte Server und Benutzer in den Einstellungen hinterlegen."
+
+msgid "Connecting to {server}…"
+msgstr "Verbinde mit {server}…"
+
+msgid "Connection error: {error}"
+msgstr "Verbindungsfehler: {error}"
+
+msgid ""
+"No speed dials yet.\n"
+"Add contacts via ★ in Contacts or Call Journal."
+msgstr ""
+"Keine Kurzwahlen.\n"
+"Im Telefonbuch oder Journal per ★ hinzufügen."
+
+msgid "Transfer current or ringing call directly to {name} ({number})"
+msgstr "Aktuelles oder klingelndes Telefonat direkt an {name} ({number}) übergeben"
+
+msgid "Contact not found or invalid phone number"
+msgstr "Kontakt nicht im Telefonbuch gefunden oder ungültige Rufnummer"
+
+msgid "Line 1 volume: {percent}% • Drag to adjust"
+msgstr "Lautstärke Leitung 1: {percent}% • Ziehen zum Anpassen"
+
+msgid "Line 2 volume: {percent}% • Drag to adjust"
+msgstr "Lautstärke Leitung 2: {percent}% • Ziehen zum Anpassen"
+
+msgid "Line 2 • Click to swap • Drag onto a contact to transfer"
+msgstr "Leitung 2 • Klicken zum Makeln • Auf Kontakt ziehen zum Weiterleiten"
+
+msgid "Free"
+msgstr "Frei"
+
+msgid "Drag line onto a colleague or contact to transfer"
+msgstr "Leitung auf Kollegen oder Kontakt ziehen zum Weiterleiten"
+
+msgid "Run in Background"
+msgstr "Im Hintergrund weiterlaufen"
+
+msgid "Keep Deskphone active for incoming calls when closing the window"
+msgstr "Deskphone beim Schließen des Fensters für eingehende Anrufe aktiv halten"
+
+msgid "Audio device: {device}"
+msgstr "Audiogerät: {device}"
+
+msgid "Pick up colleague's call"
+msgstr "Anruf des Kollegen übernehmen"
+
+msgid "Pickup {name}"
+msgstr "Übernahme {name}"
+
+msgid "Held line 2 transferred to {name}"
+msgstr "Gehaltene Leitung 2 an {name} übergeben"
+
+msgid "Transfer failed: {error}"
+msgstr "Transfer fehlgeschlagen: {error}"
+
+msgid "Incoming call deflected to {name}"
+msgstr "Eingehender Anruf direkt an {name} umgeleitet"
+
+msgid "Call transferred to {name}"
+msgstr "Telefonat an {name} übergeben"
+
+msgid "No active call to transfer to {name}"
+msgstr "Kein aktives Gespräch zum Abgeben an {name}"
+
+msgid "Calls merged: {first} ↔ {second}"
+msgstr "Gespräche verbunden: {first} ↔ {second}"
+
+msgid "Merge failed: {error}"
+msgstr "Zusammenschalten fehlgeschlagen: {error}"
+
+msgid "Dialing…"
+msgstr "Wählt …"
+
+msgid "Ready for incoming calls"
+msgstr "Erreichbar für eingehende Anrufe"
+
+msgid "For {name} ({target}) • Call waiting"
+msgstr "Für {name} ({target}) • Anklopfen"
+
+msgid "For {name} ({target}){suffix}"
+msgstr "Für {name} ({target}){suffix}"
+
+msgid "Call for {name} ({target})"
+msgstr "Anruf für {name} ({target})"
+
+msgid "From: {name} ({number})"
+msgstr "Von: {name} ({number})"
+
+msgid "From: {name}"
+msgstr "Von: {name}"
+
+msgid "Group {target}"
+msgstr "Abteilung {target}"
+
+msgid "Group Call"
+msgstr "Gruppenruf"
+
+msgid "For {target}{suffix}"
+msgstr "Für {target}{suffix}"
+
+msgid "Group Call {group} ({target}): {caller}"
+msgstr "Abteilungsruf {group} ({target}): {caller}"
+
+msgid "Group Call ({target}): {caller}"
+msgstr "Abteilungsruf ({target}): {caller}"
+
+msgid "Group Call: {caller}"
+msgstr "Gruppenruf: {caller}"
+
+msgid "Number: {number}"
+msgstr "Rufnummer: {number}"
+
+msgid "Remote party hung up"
+msgstr "Gesprächspartner hat aufgelegt"
+
+msgid "Held call ({name}) ended"
+msgstr "Gehaltenes Gespräch ({name}) beendet"
