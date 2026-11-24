@@ -10,7 +10,7 @@ jobs:
   test-and-validate:
     runs-on: ubuntu-latest
     container:
-      image: fedora:43
+      image: fedora:latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -47,7 +47,7 @@ jobs:
   flatpak:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-49
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-51
       options: --privileged
     steps:
       - name: Checkout repository

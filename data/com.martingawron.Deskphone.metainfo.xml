@@ -74,9 +74,17 @@
   </branding>
 
   <releases>
-    <release version="0.1.0" date="2026-11-24">
+    <release version="1.0.0" date="2026-11-24">
+      <url type="details">https://github.com/megawron/deskphone/releases/tag/v1.0.0</url>
       <description>
-        <p>Initial GNOME release featuring pure-Rust SIP/RTP telephony, multi-provider support (Standard SIP, SwyxWare, Asterisk), Libadwaita adaptive two-column UI, and GNOME Keyring integration.</p>
+        <p>First public release.</p>
+        <ul>
+          <li>Calls over standard SIP, Asterisk / FreePBX and SwyxWare, with automatic phone system detection</li>
+          <li>Two lines with hold, swap, merge and call transfers</li>
+          <li>Call journal, contacts, voicemail and speed dial with live presence</li>
+          <li>Optional GNOME Contacts sync including contact photos</li>
+          <li>English and German translations</li>
+        </ul>
       </description>
     </release>
   </releases>

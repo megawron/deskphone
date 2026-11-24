@@ -6,12 +6,11 @@
          xmlns="http://usefulinc.com/ns/doap#">
 
   <name xml:lang="en">Deskphone</name>
-  <shortdesc xml:lang="en">Modern native SIP and PBX softphone for GNOME</shortdesc>
+  <shortdesc xml:lang="en">Modern SIP and PBX softphone for GNOME</shortdesc>
   <description xml:lang="en">
-    Deskphone is a modern, native SIP and PBX softphone built with GTK 4,
-    Libadwaita, and a pure-Rust telephony engine. It supports Standard SIP
-    providers and routers (FRITZ!Box, Sipgate), Asterisk / FreePBX, and
-    SwyxWare enterprise PBXs, with GNOME Keyring and GNOME Contacts integration.
+    Deskphone is a native Linux softphone designed for GNOME. Make and receive
+    calls using standard SIP accounts (such as FRITZ!Box or Sipgate),
+    Asterisk / FreePBX servers, and SwyxWare / Enreach office phone systems.
   </description>
 
   <homepage rdf:resource="https://deskphone.martingawron.com" />
@@ -26,6 +25,14 @@
       <browse rdf:resource="https://github.com/megawron/deskphone" />
     </GitRepository>
   </repository>
+
+  <release>
+    <Version>
+      <name>1.0.0</name>
+      <created>2026-11-24</created>
+      <revision>1.0.0</revision>
+    </Version>
+  </release>
 
   <maintainer>
     <foaf:Person>

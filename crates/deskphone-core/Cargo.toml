@@ -1,6 +1,6 @@
 [package]
 name = "deskphone-core"
-version = "0.2.0"
+version = "1.0.0"
 edition = "2021"
 description = "Core headless PBX & Softphone engine (Swyx, Asterisk, Generic SIP) in pure Rust"
 license = "GPL-3.0-or-later"

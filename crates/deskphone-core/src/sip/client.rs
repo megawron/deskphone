@@ -15,8 +15,11 @@ use super::digest::DigestAuth;
 use super::message::{extract_uri, extract_user, SipMessage, SipMessageType};
 use super::sdp::{MediaDirection, SdpSession};
 
-pub const SWYX_USER_AGENT: &str =
-    "SwyxIt!/14.20.0 (Language=Deutsch) (LineMgr=CLMgr.exe/14.21) (OS=Linux) (Deskphone/0.2.0)";
+pub const SWYX_USER_AGENT: &str = concat!(
+    "SwyxIt!/14.20.0 (Language=Deutsch) (LineMgr=CLMgr.exe/14.21) (OS=Linux) (Deskphone/",
+    env!("CARGO_PKG_VERSION"),
+    ")"
+);
 pub const ALLOW_METHODS: &str =
     "INVITE, ACK, CANCEL, BYE, NOTIFY, REFER, OPTIONS, INFO, SUBSCRIBE, MESSAGE, UPDATE";
 /// Only advertise extensions that are actually implemented. Session timers (`timer`)
