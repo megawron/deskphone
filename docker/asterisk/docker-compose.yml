@@ -1,0 +1,10 @@
+services:
+  asterisk:
+    build: .
+    container_name: deskphone-asterisk
+    ports:
+      - "5060:5060/udp"
+      - "5060:5060/tcp"
+      - "5038:5038/tcp"
+      - "10000-10050:10000-10050/udp"
+    restart: unless-stopped

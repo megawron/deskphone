@@ -1,0 +1,11 @@
+/target
+.cargo/config.toml
+META.md
+OVERTHINKING.md
+*.log
+*.o
+*.so
+*.zip
+main.bundle.js
+package.json
+legacy/

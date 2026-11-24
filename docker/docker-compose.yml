@@ -1,0 +1,19 @@
+services:
+  asterisk:
+    build:
+      context: ./asterisk
+    container_name: deskphone-asterisk
+    ports:
+      - "5060:5060/udp"
+      - "5060:5060/tcp"
+      - "5038:5038/tcp"
+      - "10000-10050:10000-10050/udp"
+    restart: unless-stopped
+
+  swyx-mock:
+    build:
+      context: ./swyx-mock
+    container_name: deskphone-swyx-mock
+    ports:
+      - "8094:8094/tcp"
+    restart: unless-stopped

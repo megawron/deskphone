@@ -1,0 +1,25 @@
+[package]
+name = "deskphone-cli"
+version = "0.2.0"
+edition = "2021"
+description = "CLI tool and background daemon for Deskphone softphone engine"
+license = "GPL-3.0-or-later"
+homepage = "https://deskphone.martingawron.com"
+repository = "https://github.com/megawron/deskphone"
+default-run = "deskphone-cli"
+
+[[bin]]
+name = "deskphone-cli"
+path = "src/main.rs"
+
+[[bin]]
+name = "swyx-client"
+path = "src/bin/swyx_client.rs"
+
+[dependencies]
+deskphone-core = { path = "../deskphone-core" }
+tokio = { version = "1.38", features = ["full"] }
+clap = { version = "4.5", features = ["derive", "env"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+anyhow = "1.0"
