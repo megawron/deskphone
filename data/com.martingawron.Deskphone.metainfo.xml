@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.martingawron.Deskphone</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+
+  <name>Deskphone</name>
+  <summary>Modern SIP and PBX softphone</summary>
+  <summary xml:lang="de">Modernes SIP- und Telefonanlagen-Softphone</summary>
+
+  <description>
+    <p>
+      Deskphone is a native Linux softphone designed for GNOME. Make and
+      receive calls using standard SIP accounts (such as FRITZ!Box or Sipgate),
+      Asterisk / FreePBX servers, and SwyxWare / Enreach office phone systems.
+    </p>
+    <p xml:lang="de">
+      Deskphone ist ein natives Linux-Softphone für GNOME. Telefonieren Sie über
+      Standard-SIP-Konten (wie FRITZ!Box oder Sipgate), Asterisk / FreePBX sowie
+      SwyxWare- und Enreach-Telefonanlagen.
+    </p>
+    <p>Features:</p>
+    <ul>
+      <li>Two phone lines with hold, swap, attended merge, and quick call transfers</li>
+      <li>Call journal with filters, searchable contacts, and voicemail overview</li>
+      <li>Speed dial sidebar with live colleague status and group call pickup</li>
+      <li>Optional read-only GNOME Contacts &amp; Online Accounts sync and safe tel: link handling</li>
+      <li>Secure password storage in your system keyring and background call notifications</li>
+    </ul>
+  </description>
+
+  <developer id="com.martingawron">
+    <name>Martin Gawron</name>
+  </developer>
+
+  <url type="homepage">https://deskphone.martingawron.com</url>
+  <url type="bugtracker">https://github.com/megawron/deskphone/issues</url>
+  <url type="vcs-browser">https://github.com/megawron/deskphone</url>
+
+  <screenshots>
+    <screenshot type="default" environment="gnome">
+      <image type="source" width="680" height="530">https://raw.githubusercontent.com/megawron/deskphone/main/website/screenshots/deskphone-light.png</image>
+      <caption>Call journal, speed dial presence, and dialpad in light mode</caption>
+      <caption xml:lang="de">Rufjournal, Kurzwahl-Präsenz und Wählfeld im hellen Modus</caption>
+    </screenshot>
+    <screenshot environment="gnome:dark">
+      <image type="source" width="680" height="530">https://raw.githubusercontent.com/megawron/deskphone/main/website/screenshots/deskphone-dark.png</image>
+      <caption>Call journal, speed dial presence, and dialpad in dark mode</caption>
+      <caption xml:lang="de">Rufjournal, Kurzwahl-Präsenz und Wählfeld im dunklen Modus</caption>
+    </screenshot>
+  </screenshots>
+
+  <launchable type="desktop-id">com.martingawron.Deskphone.desktop</launchable>
+
+  <translation type="gettext">deskphone</translation>
+
+  <content_rating type="oars-1.1">
+    <content_attribute id="social-chat">moderate</content_attribute>
+    <content_attribute id="social-audio">intense</content_attribute>
+  </content_rating>
+
+  <requires>
+    <display_length compare="ge">360</display_length>
+  </requires>
+  <recommends>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </recommends>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#62a0ea</color>
+    <color type="primary" scheme_preference="dark">#1c71d8</color>
+  </branding>
+
+  <releases>
+    <release version="0.1.0" date="2026-11-24">
+      <description>
+        <p>Initial GNOME release featuring pure-Rust SIP/RTP telephony, multi-provider support (Standard SIP, SwyxWare, Asterisk), Libadwaita adaptive two-column UI, and GNOME Keyring integration.</p>
+      </description>
+    </release>
+  </releases>
+</component>

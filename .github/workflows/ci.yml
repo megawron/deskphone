@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-and-validate:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:43
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install GTK 4, Libadwaita, ALSA, and GNOME validation tools
+        run: |
+          dnf install -y \
+            gcc \
+            pkgconf-pkg-config \
+            gtk4-devel \
+            libadwaita-devel \
+            alsa-lib-devel \
+            gettext \
+            desktop-file-utils \
+            appstream \
+            meson \
+            ninja-build \
+            xorg-x11-server-Xvfb \
+            python3
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Validate .desktop, AppStream metainfo, DOAP, and translations
+        run: |
+          desktop-file-validate data/com.martingawron.Deskphone.desktop
+          appstreamcli validate --no-net --explain data/com.martingawron.Deskphone.metainfo.xml
+          msgfmt --check --statistics -o /dev/null po/de.po
+          python3 -c 'import xml.etree.ElementTree as ET; ET.parse("deskphone.doap")'
+
+      - name: Run workspace unit tests
+        run: xvfb-run -a env LC_ALL=C cargo test --workspace --lib --bins
+
+  flatpak:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-49
+      options: --privileged
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Flatpak bundle
+        uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: com.martingawron.Deskphone.flatpak
+          manifest-path: com.martingawron.Deskphone.json
+          cache-key: flatpak-builder-${{ github.sha }}
+          arch: x86_64

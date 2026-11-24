@@ -1,0 +1,16 @@
+[Desktop Entry]
+Name=Deskphone
+GenericName=SIP Softphone
+GenericName[de]=SIP-Softphone
+Comment=Make and receive SIP and PBX phone calls
+Comment[de]=SIP- und Telefonanlagen-Anrufe führen
+Exec=deskphone %u
+Icon=com.martingawron.Deskphone
+Terminal=false
+Type=Application
+Categories=GNOME;GTK;Network;Telephony;
+MimeType=x-scheme-handler/tel;x-scheme-handler/sip;
+StartupNotify=true
+StartupWMClass=com.martingawron.Deskphone
+Keywords=Phone;VoIP;SIP;Softphone;Swyx;Asterisk;PBX;Deskphone;Call;
+Keywords[de]=Telefon;VoIP;SIP;Softphone;Swyx;Asterisk;Telefonanlage;Deskphone;Anruf;
