@@ -1,6 +1,7 @@
 use gtk4 as gtk;
 use gtk::prelude::*;
 use libadwaita as adw;
+use adw::prelude::*;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -28,7 +29,6 @@ pub struct InCallComponents {
 fn call_action_button(icon: &str, tooltip: &str, a11y_label: &str) -> gtk::Button {
     let button = gtk::Button::from_icon_name(icon);
     button.add_css_class("call-btn-circular");
-    button.add_css_class("flat");
     button.set_valign(gtk::Align::Center);
     button.set_tooltip_text(Some(tooltip));
     button.update_property(&[gtk::accessible::Property::Label(a11y_label)]);
@@ -101,14 +101,31 @@ where
     content.set_margin_end(18);
     crate::ui::attach_call_drag_source(&content);
 
-    // Caller identity: avatar, name, details
+    // Caller identity: avatar (AdwAvatar for contacts/photos, calm neutral circle for unknown numbers)
+    let avatar_stack = gtk::Stack::new();
+    avatar_stack.set_halign(gtk::Align::Center);
+    avatar_stack.set_margin_bottom(14);
+
     let avatar = adw::Avatar::builder()
-        .size(96)
-        .show_initials(false)
+        .size(88)
+        .show_initials(true)
         .halign(gtk::Align::Center)
         .build();
-    avatar.set_margin_bottom(14);
-    content.append(&avatar);
+    avatar_stack.add_named(&avatar, Some("contact"));
+
+    let neutral_avatar = adw::Bin::new();
+    neutral_avatar.add_css_class("avatar-neutral-number");
+    neutral_avatar.set_size_request(88, 88);
+    neutral_avatar.set_halign(gtk::Align::Center);
+    neutral_avatar.set_valign(gtk::Align::Center);
+    let neutral_icon = gtk::Image::from_icon_name("avatar-default-symbolic");
+    neutral_icon.set_pixel_size(40);
+    neutral_icon.set_halign(gtk::Align::Center);
+    neutral_icon.set_valign(gtk::Align::Center);
+    neutral_avatar.set_child(Some(&neutral_icon));
+    avatar_stack.add_named(&neutral_avatar, Some("number"));
+    avatar_stack.set_visible_child_name("number");
+    content.append(&avatar_stack);
 
     let caller_name_label = gtk::Label::new(None);
     caller_name_label.add_css_class("title-2");
@@ -149,7 +166,7 @@ where
     content.append(&timer_row);
 
     // Call actions: Mute | Keypad | Transfer | Hold, then Hang Up slightly set apart
-    let actions_box = gtk::Box::new(gtk::Orientation::Horizontal, 12);
+    let actions_box = gtk::Box::new(gtk::Orientation::Horizontal, 10);
     actions_box.set_halign(gtk::Align::Center);
     actions_box.set_margin_top(24);
 
@@ -279,7 +296,7 @@ where
     // spacing tightens, so everything fits the default window size without scrolling.
     let rev_toggle = dtmf_revealer.clone();
     let kp_btn_toggle = keypad_button.clone();
-    let avatar_toggle = avatar.clone();
+    let avatar_toggle = avatar_stack.clone();
     let content_toggle = content.clone();
     let timer_row_toggle = timer_row.clone();
     let actions_toggle = actions_box.clone();
@@ -293,34 +310,45 @@ where
         timer_row_toggle.set_margin_top(if show { 8 } else { 14 });
         actions_toggle.set_margin_top(gap);
         if show {
-            kp_btn_toggle.remove_css_class("flat");
             kp_btn_toggle.add_css_class("suggested-action");
         } else {
             kp_btn_toggle.remove_css_class("suggested-action");
-            kp_btn_toggle.add_css_class("flat");
         }
     });
 
-    // Avatar follows the caller: contact photo, initials for names, person icon for numbers.
-    // Also drop the number from the details line when it is already shown as the title.
+    // Avatar follows the caller: contact photo / initials for named contacts, calm neutral
+    // circle for unknown phone numbers. Also drop the leading number from the details line
+    // when it has the same digits as the title (e.g. "+49 7164 14950-17" vs "+4971641495017").
     let refresh_identity: Rc<dyn Fn()> = {
         let av = avatar.clone();
+        let av_stack = avatar_stack.clone();
         let name_lbl = caller_name_label.clone();
         let ext_lbl = caller_ext_label.clone();
         Rc::new(move || {
             let name = name_lbl.text().to_string();
             let is_number = crate::ui::is_phone_number(&name);
-            av.set_text(Some(&crate::ui::clean_name_for_avatar(&name)));
-            av.set_show_initials(!is_number);
-            match crate::ui::get_contact_photo(&name) {
-                Some(tex) => av.set_custom_image(Some(&tex)),
-                None => av.set_custom_image(None::<&gtk::gdk::Paintable>),
+            let photo = crate::ui::get_contact_photo(&name);
+            if is_number && photo.is_none() {
+                av_stack.set_visible_child_name("number");
+            } else {
+                av.set_text(Some(&crate::ui::clean_name_for_avatar(&name)));
+                av.set_show_initials(!is_number);
+                match photo {
+                    Some(tex) => av.set_custom_image(Some(&tex)),
+                    None => av.set_custom_image(None::<&gtk::gdk::Paintable>),
+                }
+                av_stack.set_visible_child_name("contact");
             }
 
             let details = ext_lbl.text().to_string();
-            let duplicate_prefix = format!("{} • ", name.trim());
-            if !name.trim().is_empty() && details.starts_with(&duplicate_prefix) {
-                ext_lbl.set_text(&details[duplicate_prefix.len()..]);
+            if let Some((first_part, rest)) = details.split_once(" • ") {
+                let n_digits = crate::gnome_contacts::normalize_phone_digits(&name);
+                let p_digits = crate::gnome_contacts::normalize_phone_digits(first_part);
+                let same_raw = !name.trim().is_empty() && first_part.trim() == name.trim();
+                let same_digits = !n_digits.is_empty() && n_digits == p_digits;
+                if same_raw || same_digits {
+                    ext_lbl.set_text(rest);
+                }
             }
         })
     };

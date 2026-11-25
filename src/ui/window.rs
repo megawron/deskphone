@@ -148,6 +148,26 @@ impl RingtonePlayer {
     }
 }
 
+/// Formats a caller label without repeating the phone number when name and number
+/// represent the same digits (e.g. `"+49 7164 14950-17"` and `"+4971641495017"`).
+fn format_caller_display(name: &str, number: &str) -> String {
+    let n = name.trim();
+    let num = number.trim();
+    if num.is_empty() || n == num {
+        return n.to_string();
+    }
+    let n_digits = crate::gnome_contacts::normalize_phone_digits(n);
+    let num_digits = crate::gnome_contacts::normalize_phone_digits(num);
+    if !n_digits.is_empty() && n_digits == num_digits {
+        return n.to_string();
+    }
+    if n.is_empty() {
+        num.to_string()
+    } else {
+        format!("{} ({})", n, num)
+    }
+}
+
 /// Löst eine angerufene Nebenstelle / Zielnummer (z. B. bei Gruppen-Signalisierung) über das
 /// Telefonbuch bzw. die Kurzwahlen zum lesbaren Namen des angerufenen Kollegen auf.
 pub fn resolve_called_colleague_name(
@@ -1216,7 +1236,7 @@ impl MainWindow {
                 i_mute_swap.set_tooltip_text(Some(&crate::i18n::tr("Mute")));
 
                 // Update Sidebar Dock & Lines
-                s_caller.set_text(&format!("{} ({})", cur_hld.caller_name, cur_hld.extension));
+                s_caller.set_text(&format_caller_display(&cur_hld.caller_name, &cur_hld.extension));
                 s_timer.set_text(&format!(
                     "{:02}:{:02}",
                     cur_hld.duration_secs / 60,
@@ -1330,7 +1350,7 @@ impl MainWindow {
                     is_held: false,
                 });
 
-                s_caller_hang.set_text(&format!("{} ({})", held.caller_name, held.extension));
+                s_caller_hang.set_text(&format_caller_display(&held.caller_name, &held.extension));
                 s_timer_hang.set_text(&format!(
                     "{:02}:{:02}",
                     held.duration_secs / 60,
@@ -1946,7 +1966,7 @@ impl MainWindow {
             i_hold_ans.set_icon_name("media-playback-pause-symbolic");
             i_hold_ans.set_tooltip_text(Some(&crate::i18n::tr("Hold")));
 
-            s_caller_ans.set_text(&format!("{} ({})", disp_name, num));
+            s_caller_ans.set_text(&format_caller_display(&disp_name, &num));
             s_timer_ans.set_text("00:00");
             s_dock_ans.set_visible(true);
             s_chip1_ans.add_css_class("line-chip-active");
@@ -2189,7 +2209,7 @@ impl MainWindow {
             };
 
             // Update Sidebar Dock & show it
-            s_caller_trig.set_text(&format!("{} ({})", name, number));
+            s_caller_trig.set_text(&format_caller_display(&name, &number));
             s_timer_trig.set_text("00:00");
             s_dock_call.set_visible(true);
             s_chip1_trig.add_css_class("line-chip-active");

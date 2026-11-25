@@ -1204,28 +1204,35 @@ where
     // Active Call Main Row
     let active_row = gtk::Box::new(gtk::Orientation::Horizontal, 8);
     let avatar_icon = gtk::Image::from_icon_name("avatar-default-symbolic");
-    avatar_icon.set_pixel_size(36);
+    avatar_icon.set_pixel_size(32);
     active_row.append(&avatar_icon);
 
     let text_col = gtk::Box::new(gtk::Orientation::Vertical, 2);
+    text_col.set_hexpand(true);
     let docked_caller_label = gtk::Label::new(Some("Max Mustermann (101)"));
     docked_caller_label.add_css_class("heading");
-    docked_caller_label.set_halign(gtk::Align::Start);
+    docked_caller_label.set_halign(gtk::Align::Fill);
+    docked_caller_label.set_xalign(0.0);
+    docked_caller_label.set_hexpand(true);
+    docked_caller_label.set_ellipsize(gtk::pango::EllipsizeMode::End);
+    docked_caller_label.set_max_width_chars(18);
     text_col.append(&docked_caller_label);
 
     let docked_ext_label = gtk::Label::new(Some(&crate::i18n::tr("Line 1 • HD")));
     docked_ext_label.add_css_class("caption");
     docked_ext_label.add_css_class("dim-label");
-    docked_ext_label.set_halign(gtk::Align::Start);
+    docked_ext_label.set_halign(gtk::Align::Fill);
+    docked_ext_label.set_xalign(0.0);
+    docked_ext_label.set_hexpand(true);
+    docked_ext_label.set_ellipsize(gtk::pango::EllipsizeMode::End);
+    docked_ext_label.set_max_width_chars(18);
     text_col.append(&docked_ext_label);
     active_row.append(&text_col);
 
-    let timer_sp = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-    timer_sp.set_hexpand(true);
-    active_row.append(&timer_sp);
-
     let docked_timer_label = gtk::Label::new(Some("00:00"));
     docked_timer_label.add_css_class("heading");
+    docked_timer_label.add_css_class("numeric");
+    docked_timer_label.set_valign(gtk::Align::Center);
     active_row.append(&docked_timer_label);
 
     docked_call_box.append(&active_row);
