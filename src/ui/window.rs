@@ -530,6 +530,7 @@ impl MainWindow {
         let select_number_holder: Rc<RefCell<Option<Rc<dyn Fn(String)>>>> = Rc::new(RefCell::new(None));
         let fav_changed_holder: Rc<RefCell<Option<Rc<dyn Fn()>>>> = Rc::new(RefCell::new(None));
         let sidebar_reload_hotkeys_holder: Rc<RefCell<Option<Rc<dyn Fn()>>>> = Rc::new(RefCell::new(None));
+        let refresh_wide_speed_dial_holder: Rc<RefCell<Option<Rc<dyn Fn()>>>> = Rc::new(RefCell::new(None));
         let open_chat_holder: Rc<RefCell<Option<Rc<dyn Fn(String, String)>>>> = Rc::new(RefCell::new(None));
         let tc_pickup = trigger_call_holder.clone();
         let p_ext_btn = current_pickup_ext.clone();
@@ -900,7 +901,14 @@ impl MainWindow {
         (sidebar_comps.set_backend_ready)(false);
         *badge_journal_holder.borrow_mut() = Some(sidebar_comps.journal_badge.clone());
         *auto_popover_holder.borrow_mut() = Some(sidebar_comps.autocomplete_popover.clone());
-        *sidebar_reload_hotkeys_holder.borrow_mut() = Some(sidebar_comps.reload_hotkeys.clone());
+        let reload_hk_inner = sidebar_comps.reload_hotkeys.clone();
+        let rw_for_hk = refresh_wide_speed_dial_holder.clone();
+        *sidebar_reload_hotkeys_holder.borrow_mut() = Some(Rc::new(move || {
+            reload_hk_inner();
+            if let Some(ref f) = *rw_for_hk.borrow() {
+                f();
+            }
+        }));
 
         let initial_hotkeys_visible = store.show_hotkeys_sidebar && !initial_dialpad_visible;
         sidebar_comps.hotkeys_toggle_btn.set_active(initial_hotkeys_visible);
@@ -2631,13 +2639,19 @@ impl MainWindow {
         });
 
         // Outer 3-pane container: NavigationSplitView (left + middle) plus an animated
-        // right-hand Speed Dial utility pane revealed on wide desktop windows (>= 900px).
+        // right-hand Speed Dial utility pane revealed on wide desktop windows (>= 900px)
+        // whenever the user actually has Speed Dial favorites.
         let outer_box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
         outer_box.set_hexpand(true);
         outer_box.set_vexpand(true);
         outer_box.append(&split_view);
 
+        sidebar_comps.speed_dial_pane.set_hexpand_set(true);
+        sidebar_comps.speed_dial_pane.set_hexpand(false);
+
         let right_pane_wrap = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+        right_pane_wrap.set_hexpand_set(true);
+        right_pane_wrap.set_hexpand(false);
         right_pane_wrap.set_vexpand(true);
         right_pane_wrap.append(&gtk::Separator::new(gtk::Orientation::Vertical));
         right_pane_wrap.append(&sidebar_comps.speed_dial_pane);
@@ -2646,6 +2660,8 @@ impl MainWindow {
             .transition_type(gtk::RevealerTransitionType::SlideLeft)
             .transition_duration(200)
             .reveal_child(false)
+            .hexpand(false)
+            .hexpand_set(true)
             .vexpand(true)
             .child(&right_pane_wrap)
             .build();
@@ -2677,14 +2693,37 @@ impl MainWindow {
 
         // 8. Responsive Breakpoints (3-Pane Wide / 2-Pane Standard / 1-Pane Mobile / Compact)
         // Breakpoint 0: Wide desktop window (>= 900px):
-        // move Speed Dial out of the left sidebar into its own right-hand utility pane.
+        // move Speed Dial out of the left sidebar into its own right-hand utility pane,
+        // but only when the user actually has Speed Dial favorites (otherwise keep a clean 2-pane layout).
+        let is_wide_window = Rc::new(std::cell::Cell::new(false));
+        let refresh_wide_speed_dial: Rc<dyn Fn()> = {
+            let is_wide = is_wide_window.clone();
+            let sds = speed_dials.clone();
+            let rev = right_pane_revealer.clone();
+            let hdr = content_header.clone();
+            let set_detached = sidebar_comps.set_speed_dial_detached.clone();
+            Rc::new(move || {
+                let show_right = is_wide.get() && !sds.borrow().is_empty();
+                rev.set_reveal_child(show_right);
+                hdr.set_show_end_title_buttons(!show_right);
+                set_detached(show_right);
+            })
+        };
+        *refresh_wide_speed_dial_holder.borrow_mut() = Some(refresh_wide_speed_dial.clone());
+
         let bp_wide = adw::Breakpoint::new(adw::BreakpointCondition::parse("min-width: 900px").unwrap());
-        bp_wide.add_setter(&right_pane_revealer, "reveal-child", Some(&true.to_value()));
-        bp_wide.add_setter(&content_header, "show-end-title-buttons", Some(&false.to_value()));
-        let detach_on = sidebar_comps.set_speed_dial_detached.clone();
-        bp_wide.connect_apply(move |_| detach_on(true));
-        let detach_off = sidebar_comps.set_speed_dial_detached.clone();
-        bp_wide.connect_unapply(move |_| detach_off(false));
+        let is_wide_on = is_wide_window.clone();
+        let rw_on = refresh_wide_speed_dial.clone();
+        bp_wide.connect_apply(move |_| {
+            is_wide_on.set(true);
+            rw_on();
+        });
+        let is_wide_off = is_wide_window.clone();
+        let rw_off = refresh_wide_speed_dial.clone();
+        bp_wide.connect_unapply(move |_| {
+            is_wide_off.set(false);
+            rw_off();
+        });
         window.add_breakpoint(bp_wide);
 
         // Breakpoint 1: Below 580px collapse into single-pane mobile navigation so
@@ -2970,7 +3009,7 @@ impl MainWindow {
             let c_pres = c_pres_sync.clone();
             let j_rel = j_rel_sync.clone();
             let j_pres = j_pres_sync.clone();
-            let hk_rel = sidebar_comps.reload_hotkeys.clone();
+            let hk_rel = sidebar_reload_hotkeys_holder.clone();
             let hk_pres = sidebar_comps.refresh_hotkeys_presence.clone();
             let sb_sens = sb_dial_sens_sync.clone();
             let chat_wins = chat_wins_sync.clone();
@@ -3133,7 +3172,9 @@ impl MainWindow {
                                 if structure_changed {
                                     c_rel();
                                     j_rel();
-                                    hk_rel();
+                                    if let Some(ref r) = *hk_rel.borrow() {
+                                        r();
+                                    }
                                 } else {
                                     c_pres();
                                     j_pres();
