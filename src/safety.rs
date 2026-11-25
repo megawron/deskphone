@@ -225,8 +225,11 @@ mod tests {
         );
 
         (sidebar.reload_hotkeys)();
+        // When initial_dialpad_visible is true on compact height, inline Speed Dial starts folded
+        assert!(!sidebar.hotkeys_revealer.reveals_child());
+        assert!(!sidebar.hotkeys_toggle_btn.is_active());
+        sidebar.hotkeys_toggle_btn.set_active(true);
         assert!(sidebar.hotkeys_revealer.reveals_child());
-        assert!(sidebar.hotkeys_toggle_btn.is_active());
         sidebar.hotkeys_toggle_btn.set_active(false);
         assert!(!sidebar.hotkeys_revealer.reveals_child());
         sidebar.hotkeys_toggle_btn.set_active(true);
@@ -240,25 +243,41 @@ mod tests {
         assert!(!sidebar.lines_revealer.reveals_child());
 
         // Verify inline speed dial list contains populated item & live in-place presence refresh works
-        let list_box = sidebar
+        let scroll = sidebar
             .hotkeys_revealer
             .child()
             .unwrap()
-            .downcast::<gtk::Box>()
+            .downcast::<gtk::ScrolledWindow>()
             .unwrap();
+        let viewport = scroll.child().unwrap().downcast::<gtk::Viewport>().unwrap();
+        let list_box = viewport.child().unwrap().downcast::<gtk::Box>().unwrap();
         let hk_btn = list_box
             .first_child()
             .expect("Hotkey item should be present in list_box")
             .downcast::<gtk::Button>()
             .unwrap();
 
-        // Verify dial_box is pinned at the bottom of sidebar.container (outside sidebar_scroll)
+        // Verify dial_box is pinned at the bottom of sidebar.container (after middle_box + separator)
         let last_child = sidebar.container.last_child().expect("dial_box should be pinned at bottom");
         assert!(last_child.is::<gtk::Box>(), "bottom pinned widget should be dial_box");
         let sep_child = last_child.prev_sibling().expect("separator should precede dial_box");
-        assert!(sep_child.is::<gtk::Separator>(), "separator should divide scroll area and dial_box");
-        let scroll_child = sep_child.prev_sibling().expect("sidebar_scroll should precede separator");
-        assert!(scroll_child.is::<gtk::ScrolledWindow>(), "sidebar body should be inside ScrolledWindow");
+        assert!(sep_child.is::<gtk::Separator>(), "separator should divide middle area and dial_box");
+        let middle_child = sep_child.prev_sibling().expect("middle_box should precede separator");
+        assert!(middle_child.is::<gtk::Box>(), "middle_box should hold speed dial and docked call card");
+
+        // Verify detaching Speed Dial moves hotkey_list_box into the right-hand utility pane and back
+        (sidebar.set_speed_dial_detached)(true);
+        assert!(scroll.child().is_none(), "inline scroll should detach hotkey_list_box in wide mode");
+        let right_scroll = sidebar
+            .speed_dial_pane
+            .content()
+            .unwrap()
+            .downcast::<gtk::ScrolledWindow>()
+            .unwrap();
+        assert!(right_scroll.child().is_some(), "right-hand pane should host hotkey_list_box in wide mode");
+        (sidebar.set_speed_dial_detached)(false);
+        assert!(right_scroll.child().is_none(), "right-hand pane should release hotkey_list_box in standard mode");
+        assert!(scroll.child().is_some(), "inline scroll should reattach hotkey_list_box in standard mode");
         assert!(!hk_btn.has_css_class("hotkey-chip-busy"));
         contacts.borrow_mut().push(crate::models::Contact {
             id: "swyx-10".into(),

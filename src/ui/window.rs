@@ -863,6 +863,8 @@ impl MainWindow {
             }
         };
 
+        let initial_dialpad_visible = store.show_dialpad
+            || (is_demo && std::env::var_os("DESKPHONE_CAPTURE_DIALPAD").is_some());
         let tc_sb_dial = trigger_call_holder.clone();
         let sidebar_comps = create_sidebar(
             contacts_list.clone(),
@@ -877,8 +879,7 @@ impl MainWindow {
             store.extension.clone(),
             store.forward_number.clone(),
             store.forward_enabled,
-            store.show_dialpad
-                || (is_demo && std::env::var_os("DESKPHONE_CAPTURE_DIALPAD").is_some()),
+            initial_dialpad_visible,
             move |name, number| {
                 if let Some(ref tc) = *tc_sb_dial.borrow() {
                     tc(name, number);
@@ -901,8 +902,9 @@ impl MainWindow {
         *auto_popover_holder.borrow_mut() = Some(sidebar_comps.autocomplete_popover.clone());
         *sidebar_reload_hotkeys_holder.borrow_mut() = Some(sidebar_comps.reload_hotkeys.clone());
 
-        sidebar_comps.hotkeys_toggle_btn.set_active(store.show_hotkeys_sidebar);
-        sidebar_comps.hotkeys_revealer.set_reveal_child(store.show_hotkeys_sidebar);
+        let initial_hotkeys_visible = store.show_hotkeys_sidebar && !initial_dialpad_visible;
+        sidebar_comps.hotkeys_toggle_btn.set_active(initial_hotkeys_visible);
+        sidebar_comps.hotkeys_revealer.set_reveal_child(initial_hotkeys_visible);
         let br_hk_save = bridge.clone();
         sidebar_comps.hotkeys_toggle_btn.connect_toggled(move |btn| {
             let show = btn.is_active();
@@ -2628,7 +2630,27 @@ impl MainWindow {
             glib::ControlFlow::Continue
         });
 
-        toast_overlay.set_child(Some(&split_view));
+        // Outer 3-pane container: NavigationSplitView (left + middle) plus an animated
+        // right-hand Speed Dial utility pane revealed on wide desktop windows (>= 900px).
+        let outer_box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+        outer_box.set_hexpand(true);
+        outer_box.set_vexpand(true);
+        outer_box.append(&split_view);
+
+        let right_pane_wrap = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+        right_pane_wrap.set_vexpand(true);
+        right_pane_wrap.append(&gtk::Separator::new(gtk::Orientation::Vertical));
+        right_pane_wrap.append(&sidebar_comps.speed_dial_pane);
+
+        let right_pane_revealer = gtk::Revealer::builder()
+            .transition_type(gtk::RevealerTransitionType::SlideLeft)
+            .transition_duration(200)
+            .reveal_child(false)
+            .vexpand(true)
+            .child(&right_pane_wrap)
+            .build();
+        outer_box.append(&right_pane_revealer);
+        toast_overlay.set_child(Some(&outer_box));
 
         // Avoid duplicate call controls: hide the sidebar call card while the in-call page is on screen
         // (in the collapsed/mobile layout only when the content page is actually shown).
@@ -2653,7 +2675,18 @@ impl MainWindow {
         }
         window.set_content(Some(&toast_overlay));
 
-        // 8. Responsive Breakpoints (Adaptive Dual-Pane / Mobile Stack)
+        // 8. Responsive Breakpoints (3-Pane Wide / 2-Pane Standard / 1-Pane Mobile / Compact)
+        // Breakpoint 0: Wide desktop window (>= 900px):
+        // move Speed Dial out of the left sidebar into its own right-hand utility pane.
+        let bp_wide = adw::Breakpoint::new(adw::BreakpointCondition::parse("min-width: 900px").unwrap());
+        bp_wide.add_setter(&right_pane_revealer, "reveal-child", Some(&true.to_value()));
+        bp_wide.add_setter(&content_header, "show-end-title-buttons", Some(&false.to_value()));
+        let detach_on = sidebar_comps.set_speed_dial_detached.clone();
+        bp_wide.connect_apply(move |_| detach_on(true));
+        let detach_off = sidebar_comps.set_speed_dial_detached.clone();
+        bp_wide.connect_unapply(move |_| detach_off(false));
+        window.add_breakpoint(bp_wide);
+
         // Breakpoint 1: Below 580px collapse into single-pane mobile navigation so
         // the right content pane always stays >= 365px wide in dual-pane mode.
         let bp_mobile = adw::Breakpoint::new(adw::BreakpointCondition::parse("max-width: 580px").unwrap());

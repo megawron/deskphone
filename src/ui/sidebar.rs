@@ -43,6 +43,8 @@ pub struct SidebarComponents {
     pub autocomplete_popover: gtk::Popover,
     pub hotkeys_revealer: gtk::Revealer,
     pub hotkeys_toggle_btn: gtk::ToggleButton,
+    pub speed_dial_pane: adw::ToolbarView,
+    pub set_speed_dial_detached: Rc<dyn Fn(bool)>,
     pub reload_hotkeys: Rc<dyn Fn()>,
     pub refresh_hotkeys_presence: Rc<dyn Fn()>,
     pub set_backend_ready: Rc<dyn Fn(bool)>,
@@ -595,25 +597,7 @@ where
     header_bar.pack_end(&device_button);
     container.append(&header_bar);
 
-    // Scrollable sidebar body below the pinned HeaderBar so small window heights
-    // or an expanded dialpad never clip controls off the bottom (GNOME / Libadwaita HIG).
-    let sidebar_scroll = gtk::ScrolledWindow::builder()
-        .vexpand(true)
-        .hexpand(true)
-        .min_content_height(164)
-        .propagate_natural_height(false)
-        .hscrollbar_policy(gtk::PolicyType::Never)
-        .vscrollbar_policy(gtk::PolicyType::Automatic)
-        .overlay_scrolling(true)
-        .has_frame(false)
-        .build();
-    let sidebar_body = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    sidebar_body.set_vexpand(true);
-    sidebar_body.set_hexpand(true);
-    sidebar_scroll.set_child(Some(&sidebar_body));
-    container.append(&sidebar_scroll);
-
-    // 2. Navigation ListBox
+    // 2. Navigation ListBox (pinned directly below HeaderBar — never scrolls away)
     let list_box = gtk::ListBox::new();
     list_box.add_css_class("navigation-sidebar");
     list_box.set_selection_mode(gtk::SelectionMode::Single);
@@ -745,14 +729,27 @@ where
     list_box.add_controller(list_click);
 
     list_box.select_row(Some(&row_journal));
-    sidebar_body.append(&list_box);
+    container.append(&list_box);
 
-    // 2b. Inline Kurzwahl / Team-BLF direkt in der linken Sidebar (reines 2-Spalten-Libadwaita-Layout)
+    // Middle area between pinned navigation and pinned bottom Dialer:
+    // holds inline Speed Dial (in 1- and 2-pane modes) or an expanding spacer
+    // (when Speed Dial detaches into its own right-hand utility pane on wide windows),
+    // plus the optional docked active-call card.
+    let middle_box = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    middle_box.set_vexpand(true);
+    middle_box.set_hexpand(true);
+    container.append(&middle_box);
+
+    let inline_speed_dial_box = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    inline_speed_dial_box.set_vexpand(true);
+    inline_speed_dial_box.set_hexpand(true);
+
+    // 2b. Inline Kurzwahl / Team-BLF direkt in der linken Sidebar (1- & 2-Spalten-Layout)
     let hk_section_header = gtk::Box::new(gtk::Orientation::Horizontal, 6);
     hk_section_header.add_css_class("sidebar-section-header");
     hk_section_header.set_margin_start(16);
     hk_section_header.set_margin_end(12);
-    hk_section_header.set_margin_top(6);
+    hk_section_header.set_margin_top(4);
     hk_section_header.set_margin_bottom(2);
 
     let hk_title_lbl = gtk::Label::new(Some(&crate::i18n::tr("Speed Dial")));
@@ -763,22 +760,30 @@ where
     hk_title_lbl.set_valign(gtk::Align::Center);
     hk_section_header.append(&hk_title_lbl);
 
+    let initial_hotkeys_open = !initial_dialpad_visible;
+    let speed_dial_was_open_before_dialpad = Rc::new(Cell::new(initial_dialpad_visible));
+
     let hotkeys_toggle_btn = gtk::ToggleButton::new();
-    hotkeys_toggle_btn.set_icon_name("pan-down-symbolic");
+    hotkeys_toggle_btn.set_icon_name(if initial_hotkeys_open {
+        "pan-down-symbolic"
+    } else {
+        "pan-end-symbolic"
+    });
     hotkeys_toggle_btn.add_css_class("flat");
     hotkeys_toggle_btn.add_css_class("circular");
     hotkeys_toggle_btn.add_css_class("sidebar-section-toggle");
     hotkeys_toggle_btn.set_valign(gtk::Align::Center);
-    hotkeys_toggle_btn.set_active(true);
+    hotkeys_toggle_btn.set_active(initial_hotkeys_open);
     hotkeys_toggle_btn.set_tooltip_text(Some(&crate::i18n::tr("Show or hide speed dial")));
     hotkeys_toggle_btn.update_property(&[gtk::accessible::Property::Label(&crate::i18n::tr("Speed Dial"))]);
     hk_section_header.append(&hotkeys_toggle_btn);
-    sidebar_body.append(&hk_section_header);
+    inline_speed_dial_box.append(&hk_section_header);
 
     let hotkeys_revealer = gtk::Revealer::builder()
         .transition_type(gtk::RevealerTransitionType::SlideDown)
         .transition_duration(180)
-        .reveal_child(true)
+        .reveal_child(initial_hotkeys_open)
+        .vexpand(true)
         .hexpand(true)
         .build();
 
@@ -792,6 +797,20 @@ where
             "pan-end-symbolic"
         });
     });
+
+    // Only the Speed Dial items list scrolls (and only when items actually overflow),
+    // never the main navigation rows above it.
+    let inline_hotkeys_scroll = gtk::ScrolledWindow::builder()
+        .vexpand(true)
+        .hexpand(true)
+        .min_content_height(0)
+        .propagate_natural_height(false)
+        .hscrollbar_policy(gtk::PolicyType::Never)
+        .vscrollbar_policy(gtk::PolicyType::Automatic)
+        .overlay_scrolling(true)
+        .has_frame(false)
+        .build();
+    inline_hotkeys_scroll.add_css_class("hotkeys-scroller");
 
     let hotkey_list_box = gtk::Box::new(gtk::Orientation::Vertical, 2);
     hotkey_list_box.set_margin_start(10);
@@ -810,10 +829,82 @@ where
             p.popdown();
         }
     });
-    sidebar_scroll.add_controller(space_click);
+    inline_hotkeys_scroll.add_controller(space_click);
 
-    hotkeys_revealer.set_child(Some(&hotkey_list_box));
-    sidebar_body.append(&hotkeys_revealer);
+    inline_hotkeys_scroll.set_child(Some(&hotkey_list_box));
+    hotkeys_revealer.set_child(Some(&inline_hotkeys_scroll));
+    inline_speed_dial_box.append(&hotkeys_revealer);
+    middle_box.append(&inline_speed_dial_box);
+
+    let detached_spacer = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    detached_spacer.set_vexpand(true);
+    detached_spacer.set_visible(false);
+    middle_box.append(&detached_spacer);
+
+    // 2c. Dedicated right-hand Speed Dial utility pane (shown on wide windows >= 900px)
+    let speed_dial_pane = adw::ToolbarView::new();
+    speed_dial_pane.add_css_class("speed-dial-pane");
+    speed_dial_pane.set_width_request(230);
+    let right_header = adw::HeaderBar::new();
+    right_header.set_show_start_title_buttons(false);
+    right_header.set_show_end_title_buttons(true);
+    let right_title = adw::WindowTitle::new(&crate::i18n::tr("Speed Dial"), "");
+    right_header.set_title_widget(Some(&right_title));
+    speed_dial_pane.add_top_bar(&right_header);
+
+    let right_hotkeys_scroll = gtk::ScrolledWindow::builder()
+        .vexpand(true)
+        .hexpand(true)
+        .min_content_height(0)
+        .propagate_natural_height(false)
+        .hscrollbar_policy(gtk::PolicyType::Never)
+        .vscrollbar_policy(gtk::PolicyType::Automatic)
+        .overlay_scrolling(true)
+        .has_frame(false)
+        .build();
+    right_hotkeys_scroll.add_css_class("hotkeys-scroller");
+    let p_space_r = popover_holder.clone();
+    let is_typing_space_r = is_user_typing.clone();
+    let space_click_r = gtk::GestureClick::new();
+    space_click_r.connect_pressed(move |_, _, _, _| {
+        is_typing_space_r.set(false);
+        if let Some(p) = p_space_r.borrow().as_ref() {
+            p.popdown();
+        }
+    });
+    right_hotkeys_scroll.add_controller(space_click_r);
+    speed_dial_pane.set_content(Some(&right_hotkeys_scroll));
+
+    let is_speed_dial_detached = Rc::new(Cell::new(false));
+    let set_speed_dial_detached: Rc<dyn Fn(bool)> = {
+        let is_detached = is_speed_dial_detached.clone();
+        let inline_box = inline_speed_dial_box.clone();
+        let spacer = detached_spacer.clone();
+        let inline_scroll = inline_hotkeys_scroll.clone();
+        let right_scroll = right_hotkeys_scroll.clone();
+        let list = hotkey_list_box.clone();
+        Rc::new(move |detached: bool| {
+            if is_detached.get() == detached {
+                return;
+            }
+            is_detached.set(detached);
+            if detached {
+                inline_box.set_visible(false);
+                spacer.set_visible(true);
+                inline_scroll.set_child(gtk::Widget::NONE);
+                list.set_margin_top(6);
+                list.set_margin_bottom(10);
+                right_scroll.set_child(Some(&list));
+            } else {
+                right_scroll.set_child(gtk::Widget::NONE);
+                list.set_margin_top(2);
+                list.set_margin_bottom(6);
+                inline_scroll.set_child(Some(&list));
+                spacer.set_visible(false);
+                inline_box.set_visible(true);
+            }
+        })
+    };
 
     struct HotkeyItemRef {
         entity_id: i64,
@@ -1258,7 +1349,7 @@ where
         .reveal_child(true)
         .child(&docked_call_box)
         .build();
-    sidebar_body.append(&docked_call_revealer);
+    middle_box.append(&docked_call_revealer);
 
     // 4. Universal Schnellwahl (kompakt am unteren Rand verankert)
     let dial_box = gtk::Box::new(gtk::Orientation::Vertical, 5);
@@ -1568,10 +1659,38 @@ where
 
     let rev_toggle = dialpad_revealer.clone();
     let on_dp_tgl = on_dialpad_toggle.clone();
+    let hk_btn_for_dp = hotkeys_toggle_btn.clone();
+    let was_open_dp = speed_dial_was_open_before_dialpad.clone();
+    let detached_dp = is_speed_dial_detached.clone();
+    let container_dp = container.clone();
     dialpad_toggle.connect_toggled(move |btn| {
         let is_active = btn.is_active();
+        // On compact-height windows in 1-/2-pane mode, fold inline Speed Dial smoothly
+        // when opening the keypad (and restore it when closing) so nothing ever overflows.
+        let is_short = container_dp.height() == 0 || container_dp.height() < 590;
+        if is_active {
+            if !detached_dp.get() && is_short && hk_btn_for_dp.is_active() {
+                was_open_dp.set(true);
+                hk_btn_for_dp.set_active(false);
+            }
+        } else if was_open_dp.replace(false) && !detached_dp.get() && !hk_btn_for_dp.is_active() {
+            hk_btn_for_dp.set_active(true);
+        }
         rev_toggle.set_reveal_child(is_active);
         on_dp_tgl(is_active);
+    });
+
+    // Reverse accordion: manually expanding inline Speed Dial on a short window folds the keypad.
+    let dp_btn_for_hk = dialpad_toggle.clone();
+    let was_open_hk = speed_dial_was_open_before_dialpad.clone();
+    let detached_hk = is_speed_dial_detached.clone();
+    let container_hk = container.clone();
+    hotkeys_toggle_btn.connect_toggled(move |btn| {
+        let is_short = container_hk.height() == 0 || container_hk.height() < 590;
+        if btn.is_active() && !detached_hk.get() && is_short && dp_btn_for_hk.is_active() {
+            was_open_hk.set(false);
+            dp_btn_for_hk.set_active(false);
+        }
     });
 
     let dial_grid = gtk::Grid::new();
@@ -1941,6 +2060,8 @@ where
         autocomplete_popover: popover,
         hotkeys_revealer,
         hotkeys_toggle_btn,
+        speed_dial_pane,
+        set_speed_dial_detached,
         reload_hotkeys: populate_hotkeys,
         refresh_hotkeys_presence,
         set_backend_ready,

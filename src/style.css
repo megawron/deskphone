@@ -789,6 +789,10 @@ banner.conn-banner-warning > revealer > widget {
     opacity: 0.4;
 }
 
+.speed-dial-pane {
+    background-color: var(--sidebar-bg-color, @window_bg_color);
+}
+
 .hotkey-chip {
     background-color: transparent;
     border: none;
