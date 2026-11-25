@@ -26,6 +26,7 @@ pub struct SidebarComponents {
     pub search_entry: gtk::SearchEntry,
     pub call_btn: gtk::Button,
     pub docked_call_box: gtk::Box,
+    pub docked_call_revealer: gtk::Revealer,
     pub docked_held_box: gtk::Box,
     pub docked_held_label: gtk::Label,
     pub docked_swap_btn: gtk::Button,
@@ -1265,7 +1266,14 @@ where
     docked_call_box.add_controller(dock_click);
 
     docked_call_box.append(&btns_row);
-    sidebar_body.append(&docked_call_box);
+
+    // The docked call card mirrors the main in-call page; it is hidden while that page is visible.
+    let docked_call_revealer = gtk::Revealer::builder()
+        .transition_type(gtk::RevealerTransitionType::SlideUp)
+        .reveal_child(true)
+        .child(&docked_call_box)
+        .build();
+    sidebar_body.append(&docked_call_revealer);
 
     // 4. Universal Schnellwahl (kompakt am unteren Rand verankert)
     let dial_box = gtk::Box::new(gtk::Orientation::Vertical, 5);
@@ -1932,6 +1940,7 @@ where
         search_entry,
         call_btn,
         docked_call_box,
+        docked_call_revealer,
         docked_held_box,
         docked_held_label,
         docked_swap_btn,

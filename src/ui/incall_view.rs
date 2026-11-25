@@ -148,23 +148,13 @@ where
     timer_row.append(&waveform_box);
     content.append(&timer_row);
 
-    // Call actions: Mute | Hold | Transfer | Keypad | Hang Up
+    // Call actions: Mute | Keypad | Transfer | Hold, then Hang Up slightly set apart
     let actions_box = gtk::Box::new(gtk::Orientation::Horizontal, 12);
     actions_box.set_halign(gtk::Align::Center);
     actions_box.set_margin_top(24);
 
     let mute_button = call_action_button("audio-input-microphone-symbolic", &tr("Mute"), &tr("Mute"));
     actions_box.append(&mute_button);
-
-    let hold_button = call_action_button("media-playback-pause-symbolic", &tr("Hold"), &tr("Hold"));
-    actions_box.append(&hold_button);
-
-    let transfer_button = call_action_button(
-        "edit-redo-symbolic",
-        &tr("Transfer (Opens contacts or drag line onto contact)"),
-        &tr("Transfer Call"),
-    );
-    actions_box.append(&transfer_button);
 
     let keypad_button = call_action_button(
         "input-dialpad-symbolic",
@@ -173,9 +163,20 @@ where
     );
     actions_box.append(&keypad_button);
 
+    let transfer_button = call_action_button(
+        "edit-redo-symbolic",
+        &tr("Transfer (Opens contacts or drag line onto contact)"),
+        &tr("Transfer Call"),
+    );
+    actions_box.append(&transfer_button);
+
+    let hold_button = call_action_button("media-playback-pause-symbolic", &tr("Hold"), &tr("Hold"));
+    actions_box.append(&hold_button);
+
     let hangup_button = gtk::Button::from_icon_name("call-stop-symbolic");
     hangup_button.add_css_class("call-btn-destructive");
     hangup_button.set_valign(gtk::Align::Center);
+    hangup_button.set_margin_start(12);
     hangup_button.set_tooltip_text(Some(&tr("Hang Up")));
     hangup_button.update_property(&[gtk::accessible::Property::Label(&tr("Hang Up"))]);
     actions_box.append(&hangup_button);
@@ -185,13 +186,13 @@ where
     // 3. DTMF keypad for voice menus (collapsed by default, digits can also be typed)
     let dtmf_digits_buffer = Rc::new(RefCell::new(String::new()));
 
-    let keypad_area = gtk::Box::new(gtk::Orientation::Vertical, 12);
-    keypad_area.set_margin_top(24);
+    let keypad_area = gtk::Box::new(gtk::Orientation::Vertical, 8);
+    keypad_area.set_margin_top(16);
     keypad_area.set_halign(gtk::Align::Center);
 
     let dtmf_display_box = gtk::Box::new(gtk::Orientation::Horizontal, 4);
     dtmf_display_box.add_css_class("card");
-    dtmf_display_box.set_size_request(232, 40);
+    dtmf_display_box.set_size_request(232, 36);
 
     let dtmf_digits_label = gtk::Label::new(Some(&tr("Ready for digits")));
     dtmf_digits_label.set_hexpand(true);
@@ -216,7 +217,7 @@ where
     keypad_area.append(&dtmf_display_box);
 
     let dtmf_grid = gtk::Grid::new();
-    dtmf_grid.set_row_spacing(6);
+    dtmf_grid.set_row_spacing(4);
     dtmf_grid.set_column_spacing(12);
     dtmf_grid.set_column_homogeneous(true);
     dtmf_grid.set_halign(gtk::Align::Center);
@@ -245,7 +246,7 @@ where
         let btn = gtk::Button::new();
         btn.set_child(Some(&btn_box));
         btn.add_css_class("flat");
-        btn.set_size_request(64, 52);
+        btn.set_size_request(64, 44);
         btn.update_property(&[gtk::accessible::Property::Label(k)]);
 
         let ch = k.chars().next().unwrap_or(' ');
@@ -274,24 +275,26 @@ where
     scroller.set_child(Some(&clamp));
     container.append(&scroller);
 
-    // Keypad toggle: like GNOME Calls, the large avatar makes room for the keypad,
-    // and the keypad is scrolled into view on very small windows.
+    // Keypad toggle: like GNOME Calls, the large avatar makes room for the keypad and the
+    // spacing tightens, so everything fits the default window size without scrolling.
     let rev_toggle = dtmf_revealer.clone();
     let kp_btn_toggle = keypad_button.clone();
-    let scroll_toggle = scroller.clone();
     let avatar_toggle = avatar.clone();
+    let content_toggle = content.clone();
+    let timer_row_toggle = timer_row.clone();
+    let actions_toggle = actions_box.clone();
     keypad_button.connect_clicked(move |_| {
-        let next_state = !rev_toggle.reveals_child();
-        rev_toggle.set_reveal_child(next_state);
-        avatar_toggle.set_visible(!next_state);
-        if next_state {
+        let show = !rev_toggle.reveals_child();
+        rev_toggle.set_reveal_child(show);
+        avatar_toggle.set_visible(!show);
+        let (outer, gap) = if show { (12, 16) } else { (24, 24) };
+        content_toggle.set_margin_top(outer);
+        content_toggle.set_margin_bottom(outer);
+        timer_row_toggle.set_margin_top(if show { 8 } else { 14 });
+        actions_toggle.set_margin_top(gap);
+        if show {
             kp_btn_toggle.remove_css_class("flat");
             kp_btn_toggle.add_css_class("suggested-action");
-            let sc = scroll_toggle.clone();
-            gtk::glib::timeout_add_local_once(std::time::Duration::from_millis(260), move || {
-                let adj = sc.vadjustment();
-                adj.set_value((adj.upper() - adj.page_size()).max(0.0));
-            });
         } else {
             kp_btn_toggle.remove_css_class("suggested-action");
             kp_btn_toggle.add_css_class("flat");

@@ -2608,6 +2608,28 @@ impl MainWindow {
         });
 
         toast_overlay.set_child(Some(&split_view));
+
+        // Avoid duplicate call controls: hide the sidebar call card while the in-call page is on screen
+        // (in the collapsed/mobile layout only when the content page is actually shown).
+        {
+            let refresh_dock: Rc<dyn Fn()> = {
+                let cs = content_stack.clone();
+                let sv = split_view.clone();
+                let rev = sidebar_comps.docked_call_revealer.clone();
+                Rc::new(move || {
+                    let incall_visible = cs.visible_child_name().as_deref() == Some("incall")
+                        && (!sv.is_collapsed() || sv.shows_content());
+                    rev.set_reveal_child(!incall_visible);
+                })
+            };
+            let r1 = refresh_dock.clone();
+            content_stack.connect_visible_child_name_notify(move |_| r1());
+            let r2 = refresh_dock.clone();
+            split_view.connect_collapsed_notify(move |_| r2());
+            let r3 = refresh_dock.clone();
+            split_view.connect_show_content_notify(move |_| r3());
+            refresh_dock();
+        }
         window.set_content(Some(&toast_overlay));
 
         // 8. Responsive Breakpoints (Adaptive Dual-Pane / Mobile Stack)
