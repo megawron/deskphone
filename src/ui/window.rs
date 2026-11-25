@@ -331,10 +331,12 @@ impl MainWindow {
         // Toast Overlay for sleek Adwaita notifications (available across whole window)
         let toast_overlay = adw::ToastOverlay::new();
 
-        // 1. Navigation Split View (Konzept A: Adwaita SplitView, schlanke Seitenleiste 215-275px)
+        // 1. Navigation Split View (Konzept A: Adwaita SplitView, schlanke Seitenleiste 215-265px)
+        // Keeping max_sidebar_width <= (900 - 231) * 0.40 = 267.6 ensures the left sidebar
+        // stays at an identical 265px width across the 900px 2-pane/3-pane breakpoint (0px jump).
         let split_view = adw::NavigationSplitView::new();
         split_view.set_min_sidebar_width(215.0);
-        split_view.set_max_sidebar_width(275.0);
+        split_view.set_max_sidebar_width(265.0);
         split_view.set_sidebar_width_fraction(0.40);
 
         // 2. Right Content Area: AdwToolbarView (flache HeaderBar mit automatischem Scroll-Schatten)
