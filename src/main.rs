@@ -203,11 +203,25 @@ fn build_ui(app: &adw::Application) {
             let win = main_window.window.clone();
             let app_cap = app.clone();
             let sm = style_manager.clone();
-            win.set_default_size(680, 530);
+            // Optional overrides: DESKPHONE_CAPTURE_SIZE=WIDTHxHEIGHT, DESKPHONE_CAPTURE_VIEW=call
+            let (cap_w, cap_h) = std::env::var("DESKPHONE_CAPTURE_SIZE")
+                .ok()
+                .and_then(|s| {
+                    let (w, h) = s.split_once('x')?;
+                    Some((w.trim().parse::<i32>().ok()?, h.trim().parse::<i32>().ok()?))
+                })
+                .unwrap_or((680, 530));
+            win.set_default_size(cap_w, cap_h);
             if let Some(child) = win.child() {
                 child.set_can_target(false);
             }
             main_window.dial_entry.set_text("+49 30 23125 100");
+            let file_prefix = if std::env::var("DESKPHONE_CAPTURE_VIEW").as_deref() == Ok("call") {
+                (main_window.show_demo_call)();
+                "deskphone-call"
+            } else {
+                "deskphone"
+            };
             sm.set_color_scheme(adw::ColorScheme::ForceLight);
 
             let save_snapshot = |w: &adw::ApplicationWindow, path: &std::path::Path| {
@@ -236,13 +250,13 @@ fn build_ui(app: &adw::Application) {
             let dir = std::path::PathBuf::from(capture_dir);
             let _ = std::fs::create_dir_all(&dir);
             adw::glib::timeout_add_local_once(std::time::Duration::from_millis(550), move || {
-                save_snapshot(&win, &dir.join("deskphone-light.png"));
+                save_snapshot(&win, &dir.join(format!("{file_prefix}-light.png")));
                 sm.set_color_scheme(adw::ColorScheme::ForceDark);
                 let win2 = win.clone();
                 let dir2 = dir.clone();
                 let app2 = app_cap.clone();
                 adw::glib::timeout_add_local_once(std::time::Duration::from_millis(450), move || {
-                    save_snapshot(&win2, &dir2.join("deskphone-dark.png"));
+                    save_snapshot(&win2, &dir2.join(format!("{file_prefix}-dark.png")));
                     app2.quit();
                 });
             });

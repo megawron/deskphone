@@ -772,3 +772,39 @@ msgstr ""
 
 msgid "Held call ({name}) ended"
 msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "Ready"
+msgstr ""
+
+msgid "On Hold"
+msgstr ""
+
+msgid "{number} • Line 1 • Connected"
+msgstr ""
+
+msgid "{number} • Line 1 • HD Voice"
+msgstr ""
+
+msgid "{number} • Line 1 • Ringing…"
+msgstr ""
+
+msgid "{number} • Line 1 • {status}"
+msgstr ""
+
+msgid "Connected ({account})"
+msgstr ""
+
+msgid "Number: {number} • Line 1 on hold"
+msgstr ""
+
+msgid "Ringing on {extension}{department}"
+msgstr ""
+
+msgid "Ringing! Click to pick up • Drag a line here or right-click to transfer"
+msgstr ""
+
+msgid "Click to call • Drag a line here or right-click to transfer"
+msgstr ""

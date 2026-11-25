@@ -208,7 +208,7 @@ where
         act_drag1.borrow().is_some()
     });
 
-    let badge_line1 = gtk::Label::new(Some("Bereit"));
+    let badge_line1 = gtk::Label::new(Some(&crate::i18n::tr("Ready")));
     badge_line1.add_css_class("caption");
     badge_line1.add_css_class("dim-label");
 
@@ -549,7 +549,7 @@ where
         badge_line1.set_text("CTI");
         chip_line1.set_tooltip_text(Some(&crate::i18n::tr("Line 1 • CTI mode ready • Desk phone connected")));
     } else {
-        badge_line1.set_text("Bereit");
+        badge_line1.set_text(&crate::i18n::tr("Ready"));
         chip_line1.set_tooltip_text(Some(&crate::i18n::tr("Line 1 • Softphone ready • PC Audio")));
     }
 
@@ -573,7 +573,7 @@ where
             b_l1.set_text("CTI");
             c_l1.set_tooltip_text(Some(&crate::i18n::tr("Line 1 • CTI mode active • Controlling desk phone")));
         } else {
-            b_l1.set_text("Bereit");
+            b_l1.set_text(&crate::i18n::tr("Ready"));
             c_l1.set_tooltip_text(Some(&crate::i18n::tr("Line 1 • Softphone ready • PC Audio")));
         }
 
@@ -869,9 +869,9 @@ where
             PresenceState::Ringing => "#ff7800",
         };
         let action_hint = if presence == PresenceState::Ringing {
-            "Klingelt! Klicken zum Heranholen • Leitung hierher ziehen / Rechtsklick: Weiterleiten"
+            crate::i18n::tr("Ringing! Click to pick up • Drag a line here or right-click to transfer")
         } else {
-            "Klick: Anrufen • Leitung hierher ziehen oder Rechtsklick: Telefonat abgeben"
+            crate::i18n::tr("Click to call • Drag a line here or right-click to transfer")
         };
         let tip = format!(
             "<b>{}</b> ({})\nStatus: <span foreground=\"{}\">{}</span>\n<span size=\"small\" alpha=\"75%\">{}</span>",
@@ -1176,7 +1176,7 @@ where
         hld_drag_dock.borrow().is_some()
     });
 
-    let docked_held_label = gtk::Label::new(Some("Gehalten"));
+    let docked_held_label = gtk::Label::new(Some(&crate::i18n::tr("On Hold")));
     docked_held_label.add_css_class("caption");
     docked_held_label.add_css_class("heading");
     docked_held_label.set_hexpand(true);

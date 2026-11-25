@@ -776,3 +776,39 @@ msgstr "Gesprächspartner hat aufgelegt"
 
 msgid "Held call ({name}) ended"
 msgstr "Gehaltenes Gespräch ({name}) beendet"
+
+msgid "Active"
+msgstr "Aktiv"
+
+msgid "Ready"
+msgstr "Bereit"
+
+msgid "On Hold"
+msgstr "Gehalten"
+
+msgid "{number} • Line 1 • Connected"
+msgstr "{number} • Leitung 1 • Verbunden"
+
+msgid "{number} • Line 1 • HD Voice"
+msgstr "{number} • Leitung 1 • HD Voice"
+
+msgid "{number} • Line 1 • Ringing…"
+msgstr "{number} • Leitung 1 • Klingelt …"
+
+msgid "{number} • Line 1 • {status}"
+msgstr "{number} • Leitung 1 • {status}"
+
+msgid "Connected ({account})"
+msgstr "Verbunden ({account})"
+
+msgid "Number: {number} • Line 1 on hold"
+msgstr "Rufnummer: {number} • Leitung 1 wird gehalten"
+
+msgid "Ringing on {extension}{department}"
+msgstr "Klingelt auf {extension}{department}"
+
+msgid "Ringing! Click to pick up • Drag a line here or right-click to transfer"
+msgstr "Klingelt! Klicken zum Heranholen • Leitung hierher ziehen / Rechtsklick: Weiterleiten"
+
+msgid "Click to call • Drag a line here or right-click to transfer"
+msgstr "Klick: Anrufen • Leitung hierher ziehen oder Rechtsklick: Telefonat abgeben"

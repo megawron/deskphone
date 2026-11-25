@@ -222,6 +222,8 @@ use crate::ui::sidebar::create_sidebar;
 pub struct MainWindow {
     pub window: adw::ApplicationWindow,
     pub dial_entry: gtk::SearchEntry,
+    /// Shows the in-call page with sample data (used for `--demo` screenshots).
+    pub show_demo_call: Rc<dyn Fn()>,
 }
 
 impl MainWindow {
@@ -1202,7 +1204,7 @@ impl MainWindow {
                 i_hold_btn_swap.remove_css_class("suggested-action");
                 i_hold_btn_swap.set_icon_name("media-playback-pause-symbolic");
                 i_hold_btn_swap.set_tooltip_text(Some("Makeln / Halten"));
-                s_b1_swap.set_text("Aktiv");
+                s_b1_swap.set_text(&crate::i18n::tr("Active"));
                 s_b1_swap.remove_css_class("warning");
                 s_b1_swap.remove_css_class("dim-label");
                 s_b1_swap.add_css_class("success");
@@ -1229,7 +1231,7 @@ impl MainWindow {
 
                 // Update InCall View
                 i_caller.set_text(&cur_hld.caller_name);
-                i_ext.set_text(&format!("{} • Leitung 1 • Verbunden", cur_hld.extension));
+                i_ext.set_text(&crate::i18n::trf("{number} • Line 1 • Connected", &[("number", &cur_hld.extension)]));
                 i_timer.set_text(&format!(
                     "{:02}:{:02}",
                     cur_hld.duration_secs / 60,
@@ -1338,7 +1340,7 @@ impl MainWindow {
 
                 // Leitung 1 active, Leitung 2 freed
                 s_chip1_hang.add_css_class("line-chip-active");
-                s_b1_hang.set_text("Aktiv");
+                s_b1_hang.set_text(&crate::i18n::tr("Active"));
                 s_b1_hang.remove_css_class("dim-label");
                 s_b1_hang.remove_css_class("warning");
                 s_b1_hang.add_css_class("success");
@@ -1347,11 +1349,11 @@ impl MainWindow {
                 s_i1_hang.add_css_class("speaker-green-icon");
                 s_vol1_hang.set_visible(true);
                 s_vol2_hang.set_visible(false);
-                s_b2_hang.set_text("Frei");
+                s_b2_hang.set_text(&crate::i18n::tr("Free"));
                 s_i2_hang.set_icon_name(Some("call-start-symbolic"));
 
                 i_caller_hang.set_text(&held.caller_name);
-                i_ext_hang.set_text(&format!("{} • Leitung 1 • Verbunden", held.extension));
+                i_ext_hang.set_text(&crate::i18n::trf("{number} • Line 1 • Connected", &[("number", &held.extension)]));
                 i_timer_hang.set_text(&format!(
                     "{:02}:{:02}",
                     held.duration_secs / 60,
@@ -1372,7 +1374,7 @@ impl MainWindow {
                 *act = None;
                 s_dock_box.set_visible(false);
                 s_chip1_hang.remove_css_class("line-chip-active");
-                s_b1_hang.set_text("Bereit");
+                s_b1_hang.set_text(&crate::i18n::tr("Ready"));
                 s_b1_hang.remove_css_class("success");
                 s_b1_hang.remove_css_class("warning");
                 s_b1_hang.add_css_class("dim-label");
@@ -1381,7 +1383,7 @@ impl MainWindow {
                 s_i1_hang.add_css_class("dim-label");
                 s_vol1_hang.set_visible(false);
                 s_vol2_hang.set_visible(false);
-                s_b2_hang.set_text("Frei");
+                s_b2_hang.set_text(&crate::i18n::tr("Free"));
                 s_i2_hang.set_icon_name(Some("call-start-symbolic"));
                 on_sel_hang("journal");
 
@@ -1524,7 +1526,7 @@ impl MainWindow {
                         h_btn_icon.remove_css_class("suggested-action");
                         h_btn_icon.set_icon_name("media-playback-pause-symbolic");
                         h_btn_icon.set_tooltip_text(Some(&crate::i18n::tr("Hold")));
-                        s_b1_hold.set_text("Aktiv");
+                        s_b1_hold.set_text(&crate::i18n::tr("Active"));
                         s_b1_hold.remove_css_class("warning");
                         s_b1_hold.add_css_class("success");
                         let t = adw::Toast::new(&crate::i18n::tr("Call resumed"));
@@ -1563,7 +1565,7 @@ impl MainWindow {
                 hld_ref.borrow_mut().take();
                 s_hb.set_visible(false);
                 i_hb.set_visible(false);
-                sb2.set_text("Frei");
+                sb2.set_text(&crate::i18n::tr("Free"));
                 si2.set_icon_name(Some("call-start-symbolic"));
                 sv2.set_visible(false);
             })
@@ -1948,7 +1950,7 @@ impl MainWindow {
             s_timer_ans.set_text("00:00");
             s_dock_ans.set_visible(true);
             s_chip1_ans.add_css_class("line-chip-active");
-            s_b1_ans.set_text("Aktiv");
+            s_b1_ans.set_text(&crate::i18n::tr("Active"));
             s_b1_ans.remove_css_class("dim-label");
             s_b1_ans.remove_css_class("warning");
             s_b1_ans.add_css_class("success");
@@ -1958,7 +1960,7 @@ impl MainWindow {
             s_vol1_ans.set_visible(true);
 
             i_caller_ans.set_text(&disp_name);
-            i_ext_ans.set_text(&format!("{} • Leitung 1 • HD Voice", num));
+            i_ext_ans.set_text(&crate::i18n::trf("{number} • Line 1 • HD Voice", &[("number", &num)]));
             i_timer_ans.set_text("00:00");
 
             on_sel_ans("incall");
@@ -2164,7 +2166,7 @@ impl MainWindow {
             } else {
                 s_held_box_trig.set_visible(false);
                 i_banner_trig.set_visible(false);
-                s_b2_trig.set_text("Frei");
+                s_b2_trig.set_text(&crate::i18n::tr("Free"));
                 s_i2_trig.set_icon_name(Some("call-start-symbolic"));
                 s_vol2_trig.set_visible(false);
             }
@@ -2191,7 +2193,7 @@ impl MainWindow {
             s_timer_trig.set_text("00:00");
             s_dock_call.set_visible(true);
             s_chip1_trig.add_css_class("line-chip-active");
-            s_b1_trig.set_text("Aktiv");
+            s_b1_trig.set_text(&crate::i18n::tr("Active"));
             s_b1_trig.remove_css_class("dim-label");
             s_b1_trig.add_css_class("success");
             s_i1_trig.set_icon_name(Some("audio-volume-high-symbolic"));
@@ -2209,7 +2211,7 @@ impl MainWindow {
 
             // Update InCall View
             i_caller_trig.set_text(&name);
-            i_ext_trig.set_text(&format!("{} • Leitung 1 • {}", number, mode_tag));
+            i_ext_trig.set_text(&crate::i18n::trf("{number} • Line 1 • {status}", &[("number", &number), ("status", &mode_tag)]));
             i_timer_trig.set_text("00:00");
             on_sel_trig("incall");
 
@@ -3149,9 +3151,9 @@ impl MainWindow {
                                 } else {
                                     String::new()
                                 };
-                                p_details.set_text(&format!(
-                                    "Klingelt auf {}{}",
-                                    colleague.extension, dept
+                                p_details.set_text(&crate::i18n::trf(
+                                    "Ringing on {extension}{department}",
+                                    &[("extension", &colleague.extension), ("department", &dept)],
                                 ));
                                 *p_ext.borrow_mut() = colleague.extension.clone();
                                 *p_cname.borrow_mut() = clean_colleague;
@@ -3237,7 +3239,7 @@ impl MainWindow {
                             conn_banner_eng.remove_css_class("conn-banner-connecting");
                             conn_banner_eng.remove_css_class("conn-banner-warning");
                             conn_banner_eng.add_css_class("conn-banner-success");
-                            conn_banner_eng.set_title(&format!("Verbunden ({})", account));
+                            conn_banner_eng.set_title(&crate::i18n::trf("Connected ({account})", &[("account", &account)]));
 
                             let cb_hide = conn_banner_eng.clone();
                             glib::timeout_add_local_once(Duration::from_millis(2000), move || {
@@ -3516,7 +3518,7 @@ impl MainWindow {
                                 format!("Eingehender Anruf: {}", display_name)
                             };
                             let body = if in_active_call {
-                                format!("Rufnummer: {} • Leitung 1 wird gehalten", caller_number)
+                                crate::i18n::trf("Number: {number} • Line 1 on hold", &[("number", &caller_number)])
                             } else {
                                 format!("Rufnummer: {}", caller_number)
                             };
@@ -3562,7 +3564,7 @@ impl MainWindow {
                             .filter(|c| c.id == call_id)
                             .map(|c| c.extension.clone());
                         if let Some(ext) = ext {
-                            i_ext_eng.set_text(&format!("{} • Leitung 1 • Klingelt …", ext));
+                            i_ext_eng.set_text(&crate::i18n::trf("{number} • Line 1 • Ringing…", &[("number", &ext)]));
                         }
                     }
                     SoftphoneEvent::CallConnected { call_id, target_number } => {
@@ -3583,7 +3585,7 @@ impl MainWindow {
                             }
                         };
                         if let Some(ext) = ext {
-                            i_ext_eng.set_text(&format!("{} • Leitung 1 • Verbunden", ext));
+                            i_ext_eng.set_text(&crate::i18n::trf("{number} • Line 1 • Connected", &[("number", &ext)]));
                             i_timer_eng.set_text("00:00");
                             s_timer_eng.set_text("00:00");
                         }
@@ -3830,9 +3832,26 @@ impl MainWindow {
             do_sync_gnome_contacts(true);
         }
 
+        let show_demo_call: Rc<dyn Fn()> = {
+            let sel = on_select.clone();
+            let name_lbl = incall_comps.caller_name_label.clone();
+            let ext_lbl = incall_comps.caller_ext_label.clone();
+            let timer_lbl = incall_comps.timer_label.clone();
+            Rc::new(move || {
+                name_lbl.set_text("Clara Weber");
+                ext_lbl.set_text(&crate::i18n::trf(
+                    "{number} • Line 1 • Connected",
+                    &[("number", "201")],
+                ));
+                timer_lbl.set_text("04:12");
+                sel("incall");
+            })
+        };
+
         MainWindow {
             window,
             dial_entry: sidebar_comps.search_entry.clone(),
+            show_demo_call,
         }
     }
 }
