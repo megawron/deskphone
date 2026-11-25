@@ -30,6 +30,45 @@ impl CallJournalEntry {
         format_smart_time(&self.timestamp, &now)
     }
 
+    /// Kompakte, sofort von einer Uhrzeit unterscheidbare Dauer für das Rufjournal:
+    /// z. B. "00:19" -> "19s", "04:12" -> "4m 12s", "65:03" -> "1h 05m", "00:00" -> "".
+    pub fn formatted_duration(&self) -> String {
+        let trimmed = self.duration.trim();
+        let parts: Vec<&str> = trimmed.split(':').collect();
+        let total_secs: Option<u64> = (|| match parts.as_slice() {
+            [m, s] => Some(m.parse::<u64>().ok()? * 60 + s.parse::<u64>().ok()?),
+            [h, m, s] => Some(
+                h.parse::<u64>().ok()? * 3600
+                    + m.parse::<u64>().ok()? * 60
+                    + s.parse::<u64>().ok()?,
+            ),
+            _ => None,
+        })();
+        match total_secs {
+            Some(0) => String::new(),
+            Some(secs) if secs < 60 => format!("{secs}s"),
+            Some(secs) if secs < 3600 => {
+                let m = secs / 60;
+                let s = secs % 60;
+                if s == 0 {
+                    format!("{m}m")
+                } else {
+                    format!("{m}m {s:02}s")
+                }
+            }
+            Some(secs) => {
+                let h = secs / 3600;
+                let m = (secs % 3600) / 60;
+                if m == 0 {
+                    format!("{h}h")
+                } else {
+                    format!("{h}h {m:02}m")
+                }
+            }
+            None => trimmed.to_string(),
+        }
+    }
+
     /// Vollständige Zeitangabe für den Hover-Tooltip
     pub fn formatted_full(&self) -> String {
         format_full_time(&self.timestamp)
@@ -666,34 +705,90 @@ mod tests {
     fn test_classify_phone_number_subtitle() {
         assert_eq!(classify_phone_number_subtitle("+4917655501234", ""), "Mobile");
         assert_eq!(classify_phone_number_subtitle("01511234567", "100"), "Mobile → 100");
+        assert_eq!(classify_phone_number_subtitle("+491605550123", ""), "Mobile");
         assert_eq!(classify_phone_number_subtitle("431", ""), "Internal");
         assert_eq!(classify_phone_number_subtitle("+49305550123", ""), "Landline");
+        assert_eq!(classify_phone_number_subtitle("06112051618", "834"), "Landline → 834");
+        // Freecall, service, VoIP, and non-German international numbers must not be mislabeled as Landline
+        assert_eq!(classify_phone_number_subtitle("+49800123456", ""), "External");
+        assert_eq!(classify_phone_number_subtitle("01805123456", ""), "External");
+        assert_eq!(classify_phone_number_subtitle("0043664123456", ""), "External");
         assert_eq!(classify_phone_number_subtitle("+14155550148", "200"), "External → 200");
+    }
+
+    #[test]
+    fn test_formatted_duration() {
+        let mk = |d: &str| CallJournalEntry {
+            id: "1".into(),
+            direction: CallDirection::Incoming,
+            name: String::new(),
+            number: "201".into(),
+            called_target: String::new(),
+            timestamp: Local::now(),
+            connected_with: String::new(),
+            duration: d.into(),
+        };
+        assert_eq!(mk("00:00").formatted_duration(), "");
+        assert_eq!(mk("00:19").formatted_duration(), "19s");
+        assert_eq!(mk("04:00").formatted_duration(), "4m");
+        assert_eq!(mk("04:12").formatted_duration(), "4m 12s");
+        assert_eq!(mk("65:08").formatted_duration(), "1h 05m");
     }
 }
 
 /// Classifies an unknown phone number for the journal row subtitle so the raw number
 /// is not duplicated on both title and subtitle lines.
+///
+/// Only classifies Mobile / Landline where the numbering plan is unambiguous (Germany / +49);
+/// service numbers (0800/0180/0900/032/0700) and international numbers fall back to External
+/// so labels are never misleading.
 pub fn classify_phone_number_subtitle(number: &str, called_target: &str) -> String {
     use crate::i18n::tr;
-    let clean: String = number.chars().filter(|c| !c.is_whitespace() && *c != '-').collect();
-    let kind = if clean.starts_with("+4915")
-        || clean.starts_with("+4916")
-        || clean.starts_with("+4917")
-        || clean.starts_with("004915")
-        || clean.starts_with("004916")
-        || clean.starts_with("004917")
-        || clean.starts_with("015")
-        || clean.starts_with("016")
-        || clean.starts_with("017")
-    {
-        tr("Mobile")
-    } else if is_internal_extension(&clean) {
+    let clean: String = number
+        .chars()
+        .filter(|c| !matches!(c, ' ' | '\t' | '-' | '/' | '(' | ')' | '.'))
+        .collect();
+
+    let kind = if is_internal_extension(&clean) {
         tr("Internal")
-    } else if clean.starts_with("+49") || clean.starts_with("0049") || clean.starts_with('0') {
-        tr("Landline")
     } else {
-        tr("External")
+        // Extract German national subscriber prefix (digits after +49 / 0049 / single leading 0)
+        let de_national: Option<&str> = if let Some(rest) = clean.strip_prefix("+49") {
+            Some(rest)
+        } else if let Some(rest) = clean.strip_prefix("0049") {
+            Some(rest)
+        } else if clean.starts_with('0') && !clean.starts_with("00") {
+            Some(&clean[1..])
+        } else {
+            None
+        };
+
+        if let Some(nat) = de_national {
+            if nat.starts_with("15")
+                || nat.starts_with("160")
+                || nat.starts_with("162")
+                || nat.starts_with("163")
+                || nat.starts_with("17")
+            {
+                tr("Mobile")
+            } else if nat.starts_with("800")
+                || nat.starts_with("180")
+                || nat.starts_with("900")
+                || nat.starts_with("137")
+                || nat.starts_with("138")
+                || nat.starts_with("700")
+                || nat.starts_with("32")
+                || nat.starts_with('1')
+            {
+                tr("External")
+            } else if nat.as_bytes().first().is_some_and(|b| (b'2'..=b'9').contains(b)) {
+                tr("Landline")
+            } else {
+                tr("External")
+            }
+        } else {
+            tr("External")
+        }
     };
 
     let target = called_target.trim();

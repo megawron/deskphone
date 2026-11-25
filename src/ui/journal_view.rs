@@ -373,32 +373,24 @@ where
             meta_col.set_valign(gtk::Align::Center);
             meta_col.set_halign(gtk::Align::End);
 
-            // Wann: Smarte Zeitangabe (Tabellenziffern über .numeric)
+            // Wann: Klare Zeitangabe oben (visuelle Hierarchie ohne Icon-Ballast)
             let time_lbl = gtk::Label::new(Some(&entry.formatted_time()));
             time_lbl.add_css_class("caption");
-            time_lbl.add_css_class("dim-label");
             time_lbl.add_css_class("numeric");
             time_lbl.set_halign(gtk::Align::End);
             meta_col.append(&time_lbl);
 
-            // Wie lange: Echtes SVG Icon (preferences-system-time-symbolic) + Dauer-Label (nur bei geführten Anrufen)
+            // Wie lange: Kompakte, abgesetzte Dauer (z. B. "19s", "4m 12s") direkt darunter
             if entry.direction != CallDirection::Missed {
-                let dur_box = gtk::Box::new(gtk::Orientation::Horizontal, 4);
-                dur_box.set_halign(gtk::Align::End);
-                dur_box.set_valign(gtk::Align::Center);
-
-                let clock_icon = gtk::Image::from_icon_name("preferences-system-time-symbolic");
-                clock_icon.set_pixel_size(14);
-                clock_icon.add_css_class("dim-label");
-                dur_box.append(&clock_icon);
-
-                let dur_lbl = gtk::Label::new(Some(&entry.duration));
-                dur_lbl.add_css_class("caption");
-                dur_lbl.add_css_class("dim-label");
-                dur_lbl.add_css_class("numeric");
-                dur_box.append(&dur_lbl);
-
-                meta_col.append(&dur_box);
+                let dur_text = entry.formatted_duration();
+                if !dur_text.is_empty() {
+                    let dur_lbl = gtk::Label::new(Some(&dur_text));
+                    dur_lbl.add_css_class("caption");
+                    dur_lbl.add_css_class("dim-label");
+                    dur_lbl.add_css_class("numeric");
+                    dur_lbl.set_halign(gtk::Align::End);
+                    meta_col.append(&dur_lbl);
+                }
             }
 
             meta_size_group.add_widget(&meta_col);
