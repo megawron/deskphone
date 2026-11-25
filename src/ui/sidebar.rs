@@ -600,6 +600,8 @@ where
     let sidebar_scroll = gtk::ScrolledWindow::builder()
         .vexpand(true)
         .hexpand(true)
+        .min_content_height(164)
+        .propagate_natural_height(false)
         .hscrollbar_policy(gtk::PolicyType::Never)
         .vscrollbar_policy(gtk::PolicyType::Automatic)
         .overlay_scrolling(true)
@@ -777,7 +779,6 @@ where
         .transition_type(gtk::RevealerTransitionType::SlideDown)
         .transition_duration(180)
         .reveal_child(true)
-        .vexpand(true)
         .hexpand(true)
         .build();
 
@@ -791,17 +792,6 @@ where
             "pan-end-symbolic"
         });
     });
-
-    let hotkeys_scroll = gtk::ScrolledWindow::builder()
-        .vexpand(true)
-        .hexpand(true)
-        .min_content_height(64)
-        .hscrollbar_policy(gtk::PolicyType::Never)
-        .vscrollbar_policy(gtk::PolicyType::Automatic)
-        .overlay_scrolling(true)
-        .has_frame(false)
-        .build();
-    hotkeys_scroll.add_css_class("hotkeys-scroller");
 
     let hotkey_list_box = gtk::Box::new(gtk::Orientation::Vertical, 2);
     hotkey_list_box.set_margin_start(10);
@@ -820,22 +810,10 @@ where
             p.popdown();
         }
     });
-    hotkeys_scroll.add_controller(space_click);
+    sidebar_scroll.add_controller(space_click);
 
-    hotkeys_scroll.set_child(Some(&hotkey_list_box));
-    hotkeys_revealer.set_child(Some(&hotkeys_scroll));
+    hotkeys_revealer.set_child(Some(&hotkey_list_box));
     sidebar_body.append(&hotkeys_revealer);
-
-    // Puffer-Spacer nur aktiv, wenn Kurzwahl zugeklappt ist, damit Wählfeld sauber unten bleibt
-    let collapsed_spacer = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    collapsed_spacer.set_vexpand(true);
-    collapsed_spacer.set_visible(false);
-    hotkeys_revealer
-        .bind_property("reveal-child", &collapsed_spacer, "visible")
-        .invert_boolean()
-        .sync_create()
-        .build();
-    sidebar_body.append(&collapsed_spacer);
 
     struct HotkeyItemRef {
         entity_id: i64,
@@ -1286,7 +1264,7 @@ where
     let dial_box = gtk::Box::new(gtk::Orientation::Vertical, 5);
     dial_box.set_margin_start(12);
     dial_box.set_margin_end(12);
-    dial_box.set_margin_top(4);
+    dial_box.set_margin_top(8);
     dial_box.set_margin_bottom(10);
 
     // A. Überschrift "Rufnummer" mit ausfahrbarem Wähltasten-Toggle
@@ -1590,21 +1568,10 @@ where
 
     let rev_toggle = dialpad_revealer.clone();
     let on_dp_tgl = on_dialpad_toggle.clone();
-    let sb_scroll_dp = sidebar_scroll.clone();
     dialpad_toggle.connect_toggled(move |btn| {
         let is_active = btn.is_active();
         rev_toggle.set_reveal_child(is_active);
         on_dp_tgl(is_active);
-        if is_active {
-            let sc = sb_scroll_dp.clone();
-            gtk::glib::timeout_add_local_once(std::time::Duration::from_millis(220), move || {
-                let adj = sc.vadjustment();
-                let max_val = (adj.upper() - adj.page_size()).max(0.0);
-                if max_val > 0.0 {
-                    adj.set_value(max_val);
-                }
-            });
-        }
     });
 
     let dial_grid = gtk::Grid::new();
@@ -1924,9 +1891,19 @@ where
         .bind_property("visible", &lines_revealer, "reveal-child")
         .sync_create()
         .build();
+    let dp_toggle_on_call = dialpad_toggle.clone();
+    docked_call_box.connect_visible_notify(move |box_w| {
+        if box_w.is_visible() && dp_toggle_on_call.is_active() {
+            dp_toggle_on_call.set_active(false);
+        }
+    });
     dial_box.append(&lines_revealer);
 
-    sidebar_body.append(&dial_box);
+    // Pin dial_box at the bottom of container outside sidebar_scroll so the dialer,
+    // keypad, and Call button are always 100% visible and never clipped at any window height.
+    let dial_sep = gtk::Separator::new(gtk::Orientation::Horizontal);
+    container.append(&dial_sep);
+    container.append(&dial_box);
 
     SidebarComponents {
         container,

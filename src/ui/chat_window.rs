@@ -33,6 +33,8 @@ where
         .modal(false) // Non-modal: blockiert niemals Telefonate oder das Hauptfenster!
         .default_width(320)
         .default_height(380)
+        .width_request(280)
+        .height_request(320)
         .title(&contact.name)
         .icon_name(crate::APP_ID)
         .destroy_with_parent(true)
@@ -106,6 +108,8 @@ where
     let msg_scroll = gtk::ScrolledWindow::new();
     msg_scroll.set_vexpand(true);
     msg_scroll.set_hexpand(true);
+    msg_scroll.set_min_content_height(140);
+    msg_scroll.set_propagate_natural_height(false);
     msg_scroll.set_hscrollbar_policy(gtk::PolicyType::Never);
 
     let content_box = gtk::Box::new(gtk::Orientation::Vertical, 0);

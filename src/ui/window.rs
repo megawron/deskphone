@@ -282,8 +282,8 @@ impl MainWindow {
             .icon_name(crate::APP_ID)
             .default_width(680)
             .default_height(530)
-            .width_request(320)
-            .height_request(400)
+            .width_request(360)
+            .height_request(520)
             .build();
 
         // Application State
@@ -877,7 +877,8 @@ impl MainWindow {
             store.extension.clone(),
             store.forward_number.clone(),
             store.forward_enabled,
-            store.show_dialpad,
+            store.show_dialpad
+                || (is_demo && std::env::var_os("DESKPHONE_CAPTURE_DIALPAD").is_some()),
             move |name, number| {
                 if let Some(ref tc) = *tc_sb_dial.borrow() {
                     tc(name, number);
@@ -2653,8 +2654,9 @@ impl MainWindow {
         window.set_content(Some(&toast_overlay));
 
         // 8. Responsive Breakpoints (Adaptive Dual-Pane / Mobile Stack)
-        // Breakpoint 1: Unter 540px (Mobile, Halbbildschirm, Tiling)
-        let bp_mobile = adw::Breakpoint::new(adw::BreakpointCondition::parse("max-width: 540px").unwrap());
+        // Breakpoint 1: Below 580px collapse into single-pane mobile navigation so
+        // the right content pane always stays >= 365px wide in dual-pane mode.
+        let bp_mobile = adw::Breakpoint::new(adw::BreakpointCondition::parse("max-width: 580px").unwrap());
         bp_mobile.add_setter(&split_view, "collapsed", Some(&true.to_value()));
         bp_mobile.add_setter(&sidebar_comps.header_bar, "show-end-title-buttons", Some(&true.to_value()));
         bp_mobile.add_setter(&passive_badge, "visible", Some(&false.to_value()));

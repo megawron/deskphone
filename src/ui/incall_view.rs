@@ -97,8 +97,8 @@ where
     content.set_vexpand(true);
     content.set_margin_top(24);
     content.set_margin_bottom(24);
-    content.set_margin_start(18);
-    content.set_margin_end(18);
+    content.set_margin_start(12);
+    content.set_margin_end(12);
     crate::ui::attach_call_drag_source(&content);
 
     // Caller identity: avatar (AdwAvatar for contacts/photos, calm neutral circle for unknown numbers)

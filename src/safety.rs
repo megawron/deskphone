@@ -240,19 +240,25 @@ mod tests {
         assert!(!sidebar.lines_revealer.reveals_child());
 
         // Verify inline speed dial list contains populated item & live in-place presence refresh works
-        let scroll = sidebar
+        let list_box = sidebar
             .hotkeys_revealer
             .child()
             .unwrap()
-            .downcast::<gtk::ScrolledWindow>()
+            .downcast::<gtk::Box>()
             .unwrap();
-        let viewport = scroll.child().unwrap().downcast::<gtk::Viewport>().unwrap();
-        let list_box = viewport.child().unwrap().downcast::<gtk::Box>().unwrap();
         let hk_btn = list_box
             .first_child()
             .expect("Hotkey item should be present in list_box")
             .downcast::<gtk::Button>()
             .unwrap();
+
+        // Verify dial_box is pinned at the bottom of sidebar.container (outside sidebar_scroll)
+        let last_child = sidebar.container.last_child().expect("dial_box should be pinned at bottom");
+        assert!(last_child.is::<gtk::Box>(), "bottom pinned widget should be dial_box");
+        let sep_child = last_child.prev_sibling().expect("separator should precede dial_box");
+        assert!(sep_child.is::<gtk::Separator>(), "separator should divide scroll area and dial_box");
+        let scroll_child = sep_child.prev_sibling().expect("sidebar_scroll should precede separator");
+        assert!(scroll_child.is::<gtk::ScrolledWindow>(), "sidebar body should be inside ScrolledWindow");
         assert!(!hk_btn.has_css_class("hotkey-chip-busy"));
         contacts.borrow_mut().push(crate::models::Contact {
             id: "swyx-10".into(),

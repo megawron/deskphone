@@ -15,13 +15,25 @@ pub fn create_dialer_view<F>(on_trigger_call: F) -> DialerViewComponents
 where
     F: Fn(String, String) + 'static + Clone,
 {
-    let container = gtk::Box::new(gtk::Orientation::Vertical, 14);
-    container.set_margin_top(20);
-    container.set_margin_bottom(20);
-    container.set_margin_start(12);
-    container.set_margin_end(12);
-    container.set_valign(gtk::Align::Center);
-    container.set_halign(gtk::Align::Center);
+    let container = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    container.set_hexpand(true);
+    container.set_vexpand(true);
+
+    let scroller = gtk::ScrolledWindow::builder()
+        .hscrollbar_policy(gtk::PolicyType::Never)
+        .vscrollbar_policy(gtk::PolicyType::Automatic)
+        .propagate_natural_height(false)
+        .vexpand(true)
+        .hexpand(true)
+        .build();
+
+    let inner = gtk::Box::new(gtk::Orientation::Vertical, 14);
+    inner.set_margin_top(20);
+    inner.set_margin_bottom(20);
+    inner.set_margin_start(12);
+    inner.set_margin_end(12);
+    inner.set_valign(gtk::Align::Center);
+    inner.set_halign(gtk::Align::Center);
 
     let number_buffer = Rc::new(RefCell::new(String::new()));
 
@@ -74,7 +86,7 @@ where
 
     display_box.append(&display_label);
     display_box.append(&backspace_btn);
-    container.append(&display_box);
+    inner.append(&display_box);
 
     // 2. Numeric Keypad Grid
     let grid = gtk::Grid::new();
@@ -129,7 +141,7 @@ where
         grid.attach(&key_btn, col, row, 1, 1);
     }
 
-    container.append(&grid);
+    inner.append(&grid);
 
     // 3. Large Circular Green Call Button
     let num_ref_call = number_buffer.clone();
@@ -141,7 +153,9 @@ where
         }
     });
 
-    container.append(&call_btn);
+    inner.append(&call_btn);
+    scroller.set_child(Some(&inner));
+    container.append(&scroller);
 
     // Keyboard Controller
     let key_controller = gtk::EventControllerKey::new();
@@ -160,7 +174,7 @@ where
             let mut buf = num_key.borrow_mut();
             buf.pop();
             if buf.is_empty() {
-                lbl_key.set_text("Nummer eingeben");
+                lbl_key.set_text(&crate::i18n::tr("Enter number"));
                 lbl_key.add_css_class("dim-label");
                 call_btn_kbd.set_sensitive(false);
             } else {
