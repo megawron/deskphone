@@ -845,7 +845,7 @@ where
     // 2c. Dedicated right-hand Speed Dial utility pane (shown on wide windows >= 900px)
     let speed_dial_pane = adw::ToolbarView::new();
     speed_dial_pane.add_css_class("speed-dial-pane");
-    speed_dial_pane.set_width_request(230);
+    speed_dial_pane.set_width_request(235);
     let right_header = adw::HeaderBar::new();
     right_header.set_show_start_title_buttons(false);
     right_header.set_show_end_title_buttons(true);

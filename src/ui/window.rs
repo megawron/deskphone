@@ -331,13 +331,12 @@ impl MainWindow {
         // Toast Overlay for sleek Adwaita notifications (available across whole window)
         let toast_overlay = adw::ToastOverlay::new();
 
-        // 1. Navigation Split View (Konzept A: Adwaita SplitView, schlanke Seitenleiste 215-265px)
-        // Keeping max_sidebar_width <= (900 - 231) * 0.40 = 267.6 ensures the left sidebar
-        // stays at an identical 265px width across the 900px 2-pane/3-pane breakpoint (0px jump).
+        // 1. Navigation Split View: sleek fixed 235px left sidebar in 2- and 3-pane modes
+        // so it never stretches/jumps while resizing (expands to full width when collapsed <= 590px).
         let split_view = adw::NavigationSplitView::new();
-        split_view.set_min_sidebar_width(215.0);
-        split_view.set_max_sidebar_width(265.0);
-        split_view.set_sidebar_width_fraction(0.40);
+        split_view.set_min_sidebar_width(235.0);
+        split_view.set_max_sidebar_width(235.0);
+        split_view.set_sidebar_width_fraction(0.35);
 
         // 2. Right Content Area: AdwToolbarView (flache HeaderBar mit automatischem Scroll-Schatten)
         let content_toolbar = adw::ToolbarView::new();
@@ -2727,9 +2726,9 @@ impl MainWindow {
         });
         window.add_breakpoint(bp_wide);
 
-        // Breakpoint 1: Below 580px collapse into single-pane mobile navigation so
-        // the right content pane always stays >= 365px wide in dual-pane mode.
-        let bp_mobile = adw::Breakpoint::new(adw::BreakpointCondition::parse("max-width: 580px").unwrap());
+        // Breakpoint 1: Below 590px collapse into single-pane mobile navigation so
+        // the right content pane always stays >= 355px wide in dual-pane mode.
+        let bp_mobile = adw::Breakpoint::new(adw::BreakpointCondition::parse("max-width: 590px").unwrap());
         bp_mobile.add_setter(&split_view, "collapsed", Some(&true.to_value()));
         bp_mobile.add_setter(&passive_badge, "visible", Some(&false.to_value()));
         window.add_breakpoint(bp_mobile);
