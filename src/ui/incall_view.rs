@@ -166,7 +166,7 @@ where
     content.append(&timer_row);
 
     // Call actions: Mute | Keypad | Transfer | Hold, then Hang Up slightly set apart
-    let actions_box = gtk::Box::new(gtk::Orientation::Horizontal, 10);
+    let actions_box = gtk::Box::new(gtk::Orientation::Horizontal, 8);
     actions_box.set_halign(gtk::Align::Center);
     actions_box.set_margin_top(24);
 
@@ -193,7 +193,7 @@ where
     let hangup_button = gtk::Button::from_icon_name("call-stop-symbolic");
     hangup_button.add_css_class("call-btn-destructive");
     hangup_button.set_valign(gtk::Align::Center);
-    hangup_button.set_margin_start(12);
+    hangup_button.set_margin_start(10);
     hangup_button.set_tooltip_text(Some(&tr("Hang Up")));
     hangup_button.update_property(&[gtk::accessible::Property::Label(&tr("Hang Up"))]);
     actions_box.append(&hangup_button);

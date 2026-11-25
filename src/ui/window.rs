@@ -282,7 +282,7 @@ impl MainWindow {
             .icon_name(crate::APP_ID)
             .default_width(680)
             .default_height(530)
-            .width_request(360)
+            .width_request(300)
             .height_request(520)
             .build();
 
@@ -2662,12 +2662,21 @@ impl MainWindow {
         bp_mobile.add_setter(&passive_badge, "visible", Some(&false.to_value()));
         window.add_breakpoint(bp_mobile);
 
-        // Breakpoint 2: Sehr schmale Bildschirme unter 380px (z.B. Smartphone / PinePhone Portrait 360px/320px)
-        let bp_phone = adw::Breakpoint::new(adw::BreakpointCondition::parse("max-width: 380px").unwrap());
-        bp_phone.add_setter(&split_view, "collapsed", Some(&true.to_value()));
-        bp_phone.add_setter(&sidebar_comps.header_bar, "show-end-title-buttons", Some(&true.to_value()));
-        bp_phone.add_setter(&passive_badge, "visible", Some(&false.to_value()));
-        window.add_breakpoint(bp_phone);
+        // Breakpoint 2: Very narrow window (<= 350px, e.g. slim desktop phone strip):
+        // switch journal filter pills to crisp symbolic icons with tooltips so nothing ellipsizes.
+        let bp_narrow = adw::Breakpoint::new(adw::BreakpointCondition::parse("max-width: 350px").unwrap());
+        bp_narrow.add_setter(&split_view, "collapsed", Some(&true.to_value()));
+        bp_narrow.add_setter(&sidebar_comps.header_bar, "show-end-title-buttons", Some(&true.to_value()));
+        bp_narrow.add_setter(&passive_badge, "visible", Some(&false.to_value()));
+        let set_compact_apply = journal_view_comps.set_compact_filters.clone();
+        bp_narrow.connect_apply(move |_| set_compact_apply(true));
+        let set_compact_unapply = journal_view_comps.set_compact_filters.clone();
+        bp_narrow.connect_unapply(move |_| set_compact_unapply(false));
+        window.add_breakpoint(bp_narrow);
+
+        if is_demo && std::env::var("DESKPHONE_CAPTURE_VIEW").as_deref() == Ok("journal") {
+            split_view.set_show_content(true);
+        }
 
         // Application Window Close Request (unterstützt optionalen Hintergrundmodus)
         let ring_close = ringtone_player.clone();

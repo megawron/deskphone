@@ -14,6 +14,7 @@ pub struct JournalViewComponents {
     pub refresh_presence: Rc<dyn Fn()>,
     pub mark_all_seen: Rc<dyn Fn()>,
     pub search_bar: gtk::SearchBar,
+    pub set_compact_filters: Rc<dyn Fn(bool)>,
 }
 
 pub fn create_journal_view<FCall, FTransfer, FSelectNum, FChat, FFavToggle, FSeen>(
@@ -74,12 +75,54 @@ where
         .homogeneous(false)
         .can_shrink(true)
         .build();
-    filter_group.add(adw::Toggle::builder().name("all").label(&crate::i18n::tr("All")).build());
-    filter_group.add(adw::Toggle::builder().name("missed").label(&crate::i18n::tr("Missed")).build());
-    filter_group.add(adw::Toggle::builder().name("incoming").label(&crate::i18n::tr("Incoming")).build());
-    filter_group.add(adw::Toggle::builder().name("outgoing").label(&crate::i18n::tr("Outgoing")).build());
+    let t_all = adw::Toggle::builder()
+        .name("all")
+        .label(&crate::i18n::tr("All"))
+        .tooltip(&crate::i18n::tr("All"))
+        .build();
+    let t_missed = adw::Toggle::builder()
+        .name("missed")
+        .label(&crate::i18n::tr("Missed"))
+        .tooltip(&crate::i18n::tr("Missed"))
+        .build();
+    let t_incoming = adw::Toggle::builder()
+        .name("incoming")
+        .label(&crate::i18n::tr("Incoming"))
+        .tooltip(&crate::i18n::tr("Incoming"))
+        .build();
+    let t_outgoing = adw::Toggle::builder()
+        .name("outgoing")
+        .label(&crate::i18n::tr("Outgoing"))
+        .tooltip(&crate::i18n::tr("Outgoing"))
+        .build();
+    filter_group.add(t_all.clone());
+    filter_group.add(t_missed.clone());
+    filter_group.add(t_incoming.clone());
+    filter_group.add(t_outgoing.clone());
     filter_group.set_active_name(Some("all"));
     filter_center_box.append(&filter_group);
+
+    let set_compact_filters: Rc<dyn Fn(bool)> = {
+        let fg = filter_group.clone();
+        let toggles = [
+            (t_all, crate::i18n::tr("All"), "document-open-recent-symbolic"),
+            (t_missed, crate::i18n::tr("Missed"), "call-missed-symbolic"),
+            (t_incoming, crate::i18n::tr("Incoming"), "call-incoming-symbolic"),
+            (t_outgoing, crate::i18n::tr("Outgoing"), "call-outgoing-symbolic"),
+        ];
+        Rc::new(move |compact: bool| {
+            fg.set_homogeneous(compact);
+            for (toggle, label, icon) in &toggles {
+                if compact {
+                    toggle.set_label(None);
+                    toggle.set_icon_name(Some(*icon));
+                } else {
+                    toggle.set_icon_name(None);
+                    toggle.set_label(Some(label));
+                }
+            }
+        })
+    };
 
     container.append(&filter_center_box);
 
@@ -717,5 +760,6 @@ where
         refresh_presence,
         mark_all_seen,
         search_bar,
+        set_compact_filters,
     }
 }
