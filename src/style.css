@@ -401,24 +401,6 @@ button.dialer-call-btn:disabled {
 }
 
 /* Flush Active Call Surface */
-.flush-call-surface {
-    background-color: alpha(@card_bg_color, 0.7);
-    border-bottom: 1px solid alpha(@borders, 0.7);
-    padding: 24px 32px;
-}
-
-.flush-call-surface label {
-    color: @window_fg_color;
-}
-
-.timer-text-flush {
-    font-size: 2.2rem;
-    font-weight: 700;
-    font-family: 'Cantarell', 'Inter', monospace;
-    letter-spacing: 0.5px;
-    color: @window_fg_color;
-}
-
 .audio-waveform-bar {
     min-width: 3px;
     border-radius: 2px;
