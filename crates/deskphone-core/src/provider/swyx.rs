@@ -257,12 +257,30 @@ impl PbxProvider for SwyxProvider {
                 )
             }
             Err(rest_err) => {
+                let rest_msg = rest_err.to_string();
+                warn!("Swyx REST login failed on port {}: {}", self.rest_port, rest_msg);
+                // If Swyx REST answered with an HTTP status (e.g. 401 Unauthorized / 403 / 400),
+                // do NOT mask the real auth error by falling back to closed legacy SOAP port 8094.
+                if rest_msg.contains("REST Login failed with HTTP") {
+                    return Err(rest_err);
+                }
+                // Only attempt legacy CDS SOAP fallback if the SOAP port is actually reachable.
+                if !check_tcp_port(&self.server_host, self.cds_port, 1000).await {
+                    return Err(anyhow!(
+                        "Swyx REST API (port {}) error: {}",
+                        self.rest_port,
+                        rest_msg
+                    ));
+                }
                 info!(
-                    "REST login note ({}). Falling back to CDS SOAP on port {}...",
-                    rest_err, self.cds_port
+                    "REST login unavailable ({}). Falling back to CDS SOAP on port {}...",
+                    rest_msg, self.cds_port
                 );
                 let cds = CdsClient::new(self.server_host.clone(), self.cds_port, self.use_tls);
-                let auth = cds.login(&self.username, &self.password).await?;
+                let auth = cds
+                    .login(&self.username, &self.password)
+                    .await
+                    .map_err(|soap_err| anyhow!("REST: {} | CDS SOAP: {}", rest_msg, soap_err))?;
                 let sip_creds = cds
                     .get_sip_credentials(auth.user_id, &self.username, &auth.access_token)
                     .await?;

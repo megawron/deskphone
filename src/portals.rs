@@ -31,14 +31,14 @@ where
         .build()
         .ok()?;
     rt.block_on(async move {
-        match tokio::time::timeout(std::time::Duration::from_secs(3), fut).await {
+        match tokio::time::timeout(std::time::Duration::from_secs(5), fut).await {
             Ok(Ok(val)) => Some(val),
             Ok(Err(e)) => {
-                tracing::debug!("Keyring operation unavailable: {}", e);
+                eprintln!("[Deskphone] Keyring unavailable: {}", e);
                 None
             }
             Err(_) => {
-                tracing::debug!("Keyring operation timed out");
+                eprintln!("[Deskphone] Keyring operation timed out");
                 None
             }
         }
@@ -102,6 +102,7 @@ pub fn load_password(server: &str, user: &str) -> Option<String> {
     let usr = user.to_string();
     let loaded = run_keyring_op(async move {
         let keyring = oo7::Keyring::new().await?;
+        let _ = keyring.unlock().await;
         let mut items = keyring
             .search_items(&[
                 ("app", KEYRING_APP_ID),
@@ -113,6 +114,9 @@ pub fn load_password(server: &str, user: &str) -> Option<String> {
             items = keyring.search_items(&[("app", KEYRING_APP_ID)]).await?;
         }
         if let Some(item) = items.into_iter().next() {
+            if item.is_locked().await.unwrap_or(false) {
+                let _ = item.unlock().await;
+            }
             let secret = item.secret().await?;
             let text = String::from_utf8_lossy(secret.as_bytes()).to_string();
             Ok(Some(text))

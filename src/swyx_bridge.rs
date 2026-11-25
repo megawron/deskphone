@@ -396,7 +396,6 @@ impl SwyxBridge {
 
         // Smart GNOME HIG Defaults erzwingen
         store.passive_mode = false;
-        store.background_on_close = true;
         if store.pickup_prefix.is_empty() {
             store.pickup_prefix = "*8".to_string();
         }

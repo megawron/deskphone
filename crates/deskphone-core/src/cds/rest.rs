@@ -181,8 +181,12 @@ impl SwyxRestClient {
     pub fn new(host: String, port: u16) -> Self {
         let client = reqwest::Client::builder()
             .danger_accept_invalid_certs(true) // Swyx typically uses self-signed internal certificates
+            .timeout(std::time::Duration::from_secs(12))
             .build()
-            .unwrap_or_default();
+            .unwrap_or_else(|e| {
+                tracing::warn!("SwyxRestClient builder error: {}", e);
+                reqwest::Client::new()
+            });
 
         Self { host, port, client }
     }
