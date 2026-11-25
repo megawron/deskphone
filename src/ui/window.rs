@@ -2584,7 +2584,7 @@ impl MainWindow {
 
         // 6. NavigationSplitView Pages
         let sidebar_nav_page = adw::NavigationPage::builder()
-            .child(&sidebar_comps.container)
+            .child(&sidebar_comps.root)
             .title("Deskphone")
             .build();
 
@@ -2638,9 +2638,10 @@ impl MainWindow {
             glib::ControlFlow::Continue
         });
 
-        // Outer 3-pane container: NavigationSplitView (left + middle) plus an animated
-        // right-hand Speed Dial utility pane revealed on wide desktop windows (>= 900px)
-        // whenever the user actually has Speed Dial favorites.
+        // Outer 3-pane container: NavigationSplitView (left + middle) plus a dedicated
+        // right-hand Speed Dial utility pane shown on wide desktop windows (>= 900px)
+        // whenever the user has Speed Dial favorites. Direct visibility toggle avoids
+        // resize-drag jitter across the 900px breakpoint.
         let outer_box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
         outer_box.set_hexpand(true);
         outer_box.set_vexpand(true);
@@ -2653,20 +2654,18 @@ impl MainWindow {
         right_pane_wrap.set_hexpand_set(true);
         right_pane_wrap.set_hexpand(false);
         right_pane_wrap.set_vexpand(true);
+        right_pane_wrap.set_visible(false);
         right_pane_wrap.append(&gtk::Separator::new(gtk::Orientation::Vertical));
         right_pane_wrap.append(&sidebar_comps.speed_dial_pane);
-
-        let right_pane_revealer = gtk::Revealer::builder()
-            .transition_type(gtk::RevealerTransitionType::SlideLeft)
-            .transition_duration(200)
-            .reveal_child(false)
-            .hexpand(false)
-            .hexpand_set(true)
-            .vexpand(true)
-            .child(&right_pane_wrap)
-            .build();
-        outer_box.append(&right_pane_revealer);
+        outer_box.append(&right_pane_wrap);
         toast_overlay.set_child(Some(&outer_box));
+
+        // Keep the sidebar headerbar's window close button strictly in sync with collapsed mode
+        // so it never disappears when dragging across multiple width breakpoints.
+        split_view
+            .bind_property("collapsed", &sidebar_comps.header_bar, "show-end-title-buttons")
+            .sync_create()
+            .build();
 
         // Avoid duplicate call controls: hide the sidebar call card while the in-call page is on screen
         // (in the collapsed/mobile layout only when the content page is actually shown).
@@ -2699,14 +2698,14 @@ impl MainWindow {
         let refresh_wide_speed_dial: Rc<dyn Fn()> = {
             let is_wide = is_wide_window.clone();
             let sds = speed_dials.clone();
-            let rev = right_pane_revealer.clone();
+            let pane = right_pane_wrap.clone();
             let hdr = content_header.clone();
             let set_detached = sidebar_comps.set_speed_dial_detached.clone();
             Rc::new(move || {
                 let show_right = is_wide.get() && !sds.borrow().is_empty();
-                rev.set_reveal_child(show_right);
-                hdr.set_show_end_title_buttons(!show_right);
                 set_detached(show_right);
+                pane.set_visible(show_right);
+                hdr.set_show_end_title_buttons(!show_right);
             })
         };
         *refresh_wide_speed_dial_holder.borrow_mut() = Some(refresh_wide_speed_dial.clone());
@@ -2730,7 +2729,6 @@ impl MainWindow {
         // the right content pane always stays >= 365px wide in dual-pane mode.
         let bp_mobile = adw::Breakpoint::new(adw::BreakpointCondition::parse("max-width: 580px").unwrap());
         bp_mobile.add_setter(&split_view, "collapsed", Some(&true.to_value()));
-        bp_mobile.add_setter(&sidebar_comps.header_bar, "show-end-title-buttons", Some(&true.to_value()));
         bp_mobile.add_setter(&passive_badge, "visible", Some(&false.to_value()));
         window.add_breakpoint(bp_mobile);
 
@@ -2738,7 +2736,6 @@ impl MainWindow {
         // switch journal filter pills to crisp symbolic icons with tooltips so nothing ellipsizes.
         let bp_narrow = adw::Breakpoint::new(adw::BreakpointCondition::parse("max-width: 350px").unwrap());
         bp_narrow.add_setter(&split_view, "collapsed", Some(&true.to_value()));
-        bp_narrow.add_setter(&sidebar_comps.header_bar, "show-end-title-buttons", Some(&true.to_value()));
         bp_narrow.add_setter(&passive_badge, "visible", Some(&false.to_value()));
         let set_compact_apply = journal_view_comps.set_compact_filters.clone();
         bp_narrow.connect_apply(move |_| set_compact_apply(true));

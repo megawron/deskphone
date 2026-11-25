@@ -8,6 +8,7 @@ use crate::models::{ActiveCall, AudioMode, Contact, HeldCall, PresenceState, Tel
 
 #[allow(dead_code)]
 pub struct SidebarComponents {
+    pub root: adw::BreakpointBin,
     pub container: gtk::Box,
     pub header_bar: adw::HeaderBar,
     pub list_box: gtk::ListBox,
@@ -876,8 +877,15 @@ where
     speed_dial_pane.set_content(Some(&right_hotkeys_scroll));
 
     let is_speed_dial_detached = Rc::new(Cell::new(false));
+    let is_short_height = Rc::new(Cell::new(false));
+    let dialpad_toggle_holder: Rc<RefCell<Option<gtk::ToggleButton>>> = Rc::new(RefCell::new(None));
     let set_speed_dial_detached: Rc<dyn Fn(bool)> = {
         let is_detached = is_speed_dial_detached.clone();
+        let is_short = is_short_height.clone();
+        let dp_holder = dialpad_toggle_holder.clone();
+        let hk_btn = hotkeys_toggle_btn.clone();
+        let hk_rev = hotkeys_revealer.clone();
+        let was_open = speed_dial_was_open_before_dialpad.clone();
         let inline_box = inline_speed_dial_box.clone();
         let spacer = detached_spacer.clone();
         let inline_scroll = inline_hotkeys_scroll.clone();
@@ -896,6 +904,20 @@ where
                 list.set_margin_bottom(10);
                 right_scroll.set_child(Some(&list));
             } else {
+                // If returning to inline mode on a short window while the dialpad is open,
+                // fold inline Speed Dial immediately (without animation lag) so the Call button
+                // can never be pushed off-screen.
+                let dp_open = dp_holder
+                    .borrow()
+                    .as_ref()
+                    .is_some_and(|b| b.is_active());
+                if dp_open && is_short.get() && hk_btn.is_active() {
+                    was_open.set(true);
+                    hk_rev.set_transition_duration(0);
+                    hk_btn.set_active(false);
+                    hk_rev.set_reveal_child(false);
+                    hk_rev.set_transition_duration(180);
+                }
                 right_scroll.set_child(gtk::Widget::NONE);
                 list.set_margin_top(2);
                 list.set_margin_bottom(6);
@@ -1657,17 +1679,20 @@ where
     dialpad_revealer.set_reveal_child(initial_dialpad_visible);
     dialpad_toggle.set_active(initial_dialpad_visible);
 
+    *dialpad_toggle_holder.borrow_mut() = Some(dialpad_toggle.clone());
+
     let rev_toggle = dialpad_revealer.clone();
     let on_dp_tgl = on_dialpad_toggle.clone();
     let hk_btn_for_dp = hotkeys_toggle_btn.clone();
     let was_open_dp = speed_dial_was_open_before_dialpad.clone();
     let detached_dp = is_speed_dial_detached.clone();
+    let short_dp = is_short_height.clone();
     let container_dp = container.clone();
     dialpad_toggle.connect_toggled(move |btn| {
         let is_active = btn.is_active();
         // On compact-height windows in 1-/2-pane mode, fold inline Speed Dial smoothly
         // when opening the keypad (and restore it when closing) so nothing ever overflows.
-        let is_short = container_dp.height() == 0 || container_dp.height() < 590;
+        let is_short = short_dp.get() || container_dp.height() == 0 || container_dp.height() <= 595;
         if is_active {
             if !detached_dp.get() && is_short && hk_btn_for_dp.is_active() {
                 was_open_dp.set(true);
@@ -1684,9 +1709,10 @@ where
     let dp_btn_for_hk = dialpad_toggle.clone();
     let was_open_hk = speed_dial_was_open_before_dialpad.clone();
     let detached_hk = is_speed_dial_detached.clone();
+    let short_hk = is_short_height.clone();
     let container_hk = container.clone();
     hotkeys_toggle_btn.connect_toggled(move |btn| {
-        let is_short = container_hk.height() == 0 || container_hk.height() < 590;
+        let is_short = short_hk.get() || container_hk.height() == 0 || container_hk.height() <= 595;
         if btn.is_active() && !detached_hk.get() && is_short && dp_btn_for_hk.is_active() {
             was_open_hk.set(false);
             dp_btn_for_hk.set_active(false);
@@ -2018,13 +2044,58 @@ where
     });
     dial_box.append(&lines_revealer);
 
-    // Pin dial_box at the bottom of container outside sidebar_scroll so the dialer,
+    // Pin dial_box at the bottom of container outside inline Speed Dial so the dialer,
     // keypad, and Call button are always 100% visible and never clipped at any window height.
     let dial_sep = gtk::Separator::new(gtk::Orientation::Horizontal);
     container.append(&dial_sep);
     container.append(&dial_box);
 
+    // Independent height BreakpointBin: automatically folds inline Speed Dial whenever
+    // the window is resized below 595px height with the dialpad open (and restores it
+    // once the window grows taller again), without competing with window width breakpoints.
+    let root = adw::BreakpointBin::new();
+    root.set_size_request(215, 480);
+    root.set_hexpand(true);
+    root.set_vexpand(true);
+    root.set_child(Some(&container));
+
+    let bp_short = adw::Breakpoint::new(
+        adw::BreakpointCondition::parse("max-height: 595px").unwrap(),
+    );
+    {
+        let short_on = is_short_height.clone();
+        let detached_on = is_speed_dial_detached.clone();
+        let dp_on = dialpad_toggle.clone();
+        let hk_btn_on = hotkeys_toggle_btn.clone();
+        let hk_rev_on = hotkeys_revealer.clone();
+        let was_open_on = speed_dial_was_open_before_dialpad.clone();
+        bp_short.connect_apply(move |_| {
+            short_on.set(true);
+            if !detached_on.get() && dp_on.is_active() && hk_btn_on.is_active() {
+                was_open_on.set(true);
+                hk_rev_on.set_transition_duration(0);
+                hk_btn_on.set_active(false);
+                hk_rev_on.set_reveal_child(false);
+                hk_rev_on.set_transition_duration(180);
+            }
+        });
+    }
+    {
+        let short_off = is_short_height.clone();
+        let detached_off = is_speed_dial_detached.clone();
+        let hk_btn_off = hotkeys_toggle_btn.clone();
+        let was_open_off = speed_dial_was_open_before_dialpad.clone();
+        bp_short.connect_unapply(move |_| {
+            short_off.set(false);
+            if !detached_off.get() && was_open_off.replace(false) && !hk_btn_off.is_active() {
+                hk_btn_off.set_active(true);
+            }
+        });
+    }
+    root.add_breakpoint(bp_short);
+
     SidebarComponents {
+        root,
         container,
         header_bar,
         list_box,
