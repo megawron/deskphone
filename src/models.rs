@@ -665,16 +665,17 @@ mod tests {
     #[test]
     fn test_classify_phone_number_subtitle() {
         assert_eq!(classify_phone_number_subtitle("+4917655501234", ""), "Mobile");
-        assert_eq!(classify_phone_number_subtitle("01511234567", "100"), "Mobile • Target: 100");
-        assert_eq!(classify_phone_number_subtitle("431", ""), "Internal Extension");
-        assert_eq!(classify_phone_number_subtitle("+49305550123", ""), "Landline / External");
+        assert_eq!(classify_phone_number_subtitle("01511234567", "100"), "Mobile → 100");
+        assert_eq!(classify_phone_number_subtitle("431", ""), "Internal");
+        assert_eq!(classify_phone_number_subtitle("+49305550123", ""), "Landline");
+        assert_eq!(classify_phone_number_subtitle("+14155550148", "200"), "External → 200");
     }
 }
 
 /// Classifies an unknown phone number for the journal row subtitle so the raw number
 /// is not duplicated on both title and subtitle lines.
 pub fn classify_phone_number_subtitle(number: &str, called_target: &str) -> String {
-    use crate::i18n::{tr, trf};
+    use crate::i18n::tr;
     let clean: String = number.chars().filter(|c| !c.is_whitespace() && *c != '-').collect();
     let kind = if clean.starts_with("+4915")
         || clean.starts_with("+4916")
@@ -688,16 +689,16 @@ pub fn classify_phone_number_subtitle(number: &str, called_target: &str) -> Stri
     {
         tr("Mobile")
     } else if is_internal_extension(&clean) {
-        tr("Internal Extension")
+        tr("Internal")
     } else if clean.starts_with("+49") || clean.starts_with("0049") || clean.starts_with('0') {
-        tr("Landline / External")
+        tr("Landline")
     } else {
-        tr("External Call")
+        tr("External")
     };
 
     let target = called_target.trim();
     if !target.is_empty() && target != number && target != clean {
-        trf("{kind} • Target: {target}", &[("kind", &kind), ("target", target)])
+        format!("{kind} → {target}")
     } else {
         kind
     }

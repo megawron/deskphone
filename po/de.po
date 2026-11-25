@@ -420,19 +420,16 @@ msgid "Telephony: CTI (Desk Phone) active • Click for PC Audio"
 msgstr "Telefonie: CTI (Tischtelefon) aktiv • Klicken für PC-Audio"
 
 msgid "Mobile"
-msgstr "Mobilfunk"
+msgstr "Mobil"
 
-msgid "Internal Extension"
-msgstr "Interner Anschluss"
+msgid "Internal"
+msgstr "Intern"
 
-msgid "Landline / External"
-msgstr "Festnetz / Extern"
+msgid "Landline"
+msgstr "Festnetz"
 
-msgid "External Call"
-msgstr "Externer Anruf"
-
-msgid "{kind} • Target: {target}"
-msgstr "{kind} • Ziel: {target}"
+msgid "External"
+msgstr "Extern"
 
 msgid "Extension {ext}"
 msgstr "Durchwahl {ext}"

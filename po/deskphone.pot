@@ -420,16 +420,13 @@ msgstr ""
 msgid "Mobile"
 msgstr ""
 
-msgid "Internal Extension"
+msgid "Internal"
 msgstr ""
 
-msgid "Landline / External"
+msgid "Landline"
 msgstr ""
 
-msgid "External Call"
-msgstr ""
-
-msgid "{kind} • Target: {target}"
+msgid "External"
 msgstr ""
 
 msgid "Extension {ext}"
